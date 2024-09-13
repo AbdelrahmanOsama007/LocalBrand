@@ -1,0 +1,6 @@
+@LocalBrand_HostAddress = http://localhost:5103
+
+GET {{LocalBrand_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
