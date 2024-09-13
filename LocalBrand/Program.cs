@@ -1,4 +1,3 @@
-
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,6 +44,7 @@ namespace LocalBrand
             }
 
             app.UseHttpsRedirection();
+            app.UseCors("AllowAllDomains");
 
             app.UseAuthorization();
 
