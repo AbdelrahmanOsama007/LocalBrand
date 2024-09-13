@@ -1,7 +1,11 @@
 using Infrastructure.Context;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Model.Models;
+using System.Security.Claims;
+using System.Text;
 
 namespace LocalBrand
 {
@@ -37,6 +41,30 @@ namespace LocalBrand
             builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<MyAppContext>()
                 .AddDefaultTokenProviders();
+            // Configure JWT Authentication
+            var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
+            builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.SaveToken = true;
+                x.RequireHttpsMetadata = false;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    RoleClaimType = ClaimTypes.Role // Add this line
+                };
+
+            });
+            //////////end////////////
+
+
 
             var app = builder.Build();
 
@@ -56,6 +84,32 @@ namespace LocalBrand
             app.MapControllers();
 
             app.Run();
+            static async Task SeedAdminUser(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+            {
+                var adminUsername = "admin"; // static username
+                var adminPassword = "Admin@123"; // static password
+
+                if (!await roleManager.RoleExistsAsync("Admin"))
+                {
+                    await roleManager.CreateAsync(new IdentityRole("Admin"));
+                }
+
+                var adminUser = await userManager.FindByNameAsync(adminUsername);
+                if (adminUser == null)
+                {
+                    adminUser = new AppUser
+                    {
+                        UserName = adminUsername,
+                        Email = "admin@example.com",
+                    };
+
+                    var result = await userManager.CreateAsync(adminUser, adminPassword);
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(adminUser, "Admin");
+                    }
+                }
+            }
         }
     }
 }
