@@ -1,5 +1,7 @@
 using Infrastructure.Context;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Model.Models;
 
 namespace LocalBrand
 {
@@ -30,9 +32,11 @@ namespace LocalBrand
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MyAppContext>(options =>
-            {
-                options.UseSqlServer(connectionString);
-            });
+                options.UseSqlServer(connectionString));
+
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                .AddEntityFrameworkStores<MyAppContext>()
+                .AddDefaultTokenProviders();
 
             var app = builder.Build();
 
