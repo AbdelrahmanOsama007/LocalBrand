@@ -1,4 +1,7 @@
 
+using Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
+
 namespace LocalBrand
 {
     public class Program
@@ -8,11 +11,29 @@ namespace LocalBrand
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllDomains", p =>
+                {
+                    p.AllowAnyOrigin();
+                    p.AllowAnyHeader();
+                    p.AllowAnyMethod();
+                });
+            });
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddDbContext<MyAppContext>(options =>
+            {
+                options.UseSqlServer(connectionString);
+            });
 
             var app = builder.Build();
 
