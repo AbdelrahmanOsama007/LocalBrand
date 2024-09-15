@@ -1,4 +1,6 @@
-﻿using Business.Products.Interfaces;
+﻿using Business.Products.Dtos;
+using Business.Products.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.IdentityModel.Tokens;
@@ -60,7 +62,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("AddProduct")]
-        public async Task<IActionResult> AddProduct(Product product)
+        public async Task<IActionResult> AddProduct(AdminProductDto product)
         {
             try
             {
@@ -82,7 +84,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("UpdateProduct")]
-        public async Task<IActionResult> UpdateProduct(int id,Product product)
+        public async Task<IActionResult> UpdateProduct(int id, AdminProductDto product)
         {
             try
             {

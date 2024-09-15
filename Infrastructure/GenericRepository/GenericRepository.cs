@@ -1,6 +1,8 @@
 ﻿using Infrastructure.Context;
 using Infrastructure.IGenericRepository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Model.Interfaces;
 using Model.Models;
 using System;
 using System.Collections.Generic;
@@ -43,9 +45,19 @@ namespace Infrastructure.GenericRepository
                 var entityType = typeof(TEntity).Name;
                 if (result != null)
                 {
-                    _dbSet.Remove(result);
-                    await _context.SaveChangesAsync();
-                    return new OperationResult() { Success = true, Message = $"{entityType} Deleted Successfully" };
+                    if(result is ISoftDelete softDeletableEntity)
+                    {
+                        softDeletableEntity.IsDeleted = true;
+                        _dbSet.Update(result);
+                        await _context.SaveChangesAsync();
+                        return new OperationResult() { Success = true, Message = $"{entityType} Deleted Successfully" };
+                    }
+                    else
+                    {
+                        _dbSet.Remove(result);
+                        await _context.SaveChangesAsync();
+                        return new OperationResult() { Success = true, Message = $"{entityType} Deleted Successfully" };
+                    }
                 }
                 return new OperationResult() { Success = false, Message = $"{entityType} Not Found" };
             }
@@ -86,24 +98,37 @@ namespace Infrastructure.GenericRepository
             }
         }
 
-        public async Task<OperationResult> UpdateAsync(int id,TEntity updatedEntity)
+        public async Task<OperationResult> UpdateAsync(/*int id,*/TEntity updatedEntity)
         {
             try
             {
+                //var entityType = typeof(TEntity).Name;
+                //var existingEntity = await _dbSet.FindAsync(id);
+                //if (existingEntity != null)
+                //{
+                //    _context.Entry(existingEntity).CurrentValues.SetValues(updatedEntity);
+                //    await _context.SaveChangesAsync();
+                //    return new OperationResult() { Success = true, Message = $"{entityType} Updated Successfully" };
+                //}
+                //return new OperationResult() { Success = false , Message = $"{entityType} Not Found"};
                 var entityType = typeof(TEntity).Name;
-                var existingEntity = await _dbSet.FindAsync(id);
-                if (existingEntity != null)
-                {
-                    _context.Entry(existingEntity).CurrentValues.SetValues(updatedEntity);
-                    await _context.SaveChangesAsync();
-                    return new OperationResult() { Success = true, Message = $"{entityType} Updated Successfully" };
-                }
-                return new OperationResult() { Success = false , Message = $"{entityType} Not Found"};
+                _dbSet.Update(updatedEntity);
+                await _context.SaveChangesAsync();
+                return new OperationResult() { Success = true, Message = $"{entityType} Updated Successfully" };
             }
             catch (Exception ex)
             {
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
+        }
+        public async Task DeleteRangeAsync(IEnumerable<TEntity> entities)
+        {
+            _dbSet.RemoveRange(entities);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
         }
     }
 }

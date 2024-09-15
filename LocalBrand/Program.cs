@@ -1,5 +1,12 @@
+using Business.Products.Interfaces;
+using Business.Products.Validator;
 using Infrastructure.Context;
+using Infrastructure.GenericRepository;
+using Infrastructure.IGenericRepository;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Model.Models;
 
 namespace LocalBrand
 {
@@ -21,17 +28,27 @@ namespace LocalBrand
             });
 
             builder.Services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "LocalBrand API", Version = "v1" });
+            });
 
             builder.Logging.AddConsole();
             builder.Logging.AddDebug();
 
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IGenericRepository<Product>, GenericRepository<Product>>();
+            builder.Services.AddScoped<IGenericRepository<ProductImage>, GenericRepository<ProductImage>>();
+            builder.Services.AddScoped<IGenericRepository<Stock>, GenericRepository<Stock>>();
+            builder.Services.AddScoped<IGenericRepository<ProductColorImage>, GenericRepository<ProductColorImage>>();
+
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MyAppContext>(options =>
             {
-                options.UseSqlServer(connectionString);
+                options.UseLazyLoadingProxies().UseSqlServer(connectionString);
             });
 
             var app = builder.Build();
@@ -39,16 +56,34 @@ namespace LocalBrand
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage(); // Show detailed error pages in development
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocalBrand API V1");
+                });
+            }
+            else
+            {
+                app.UseExceptionHandler(errorApp =>
+                {
+                    errorApp.Run(async context =>
+                    {
+                        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+                        if (exceptionHandlerPathFeature?.Error != null)
+                        {
+                            logger.LogError(exceptionHandlerPathFeature.Error, "Unhandled exception occurred");
+                        }
+                        context.Response.StatusCode = 500;
+                        await context.Response.WriteAsync("An unexpected fault happened. Try again later.");
+                    });
+                });
             }
 
             app.UseHttpsRedirection();
             app.UseCors("AllowAllDomains");
-
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();

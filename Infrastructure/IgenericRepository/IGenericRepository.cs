@@ -1,4 +1,5 @@
-﻿using Model.Models;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using Model.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,9 @@ namespace Infrastructure.IGenericRepository
         Task<OperationResult> GetAllAsync();
         Task<OperationResult> GetByIdAsync(int id);
         Task<OperationResult> AddAsync(TEntity entity);
-        Task<OperationResult> UpdateAsync(int id,TEntity updatedEntity);
+        Task<OperationResult> UpdateAsync(TEntity updatedEntity);
         Task<OperationResult> DeleteAsync(int id);
+        Task DeleteRangeAsync(IEnumerable<TEntity> entities);
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

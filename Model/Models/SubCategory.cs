@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace Model.Models
 {
-    public class ProductColor
+    public class SubCategory
     {
         public int Id { get; set; }
-
         public string Name { get; set; }
-        [ForeignKey("Product")]
-        public int ProductId { get; set; }
-        public Product Product { get; set; }
+        [ForeignKey("Category")]
+        public int CategoryId { get; set; }
+        public virtual Category Category { get; set; }
+        public virtual List<Product> Products { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

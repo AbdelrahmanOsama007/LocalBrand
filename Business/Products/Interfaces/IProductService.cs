@@ -10,10 +10,10 @@ namespace Business.Products.Interfaces
 {
     public interface IProductService
     {
-        Task<OperationResult> AddProductAsync(Product product);
+        Task<OperationResult> AddProductAsync(AdminProductDto product);
         Task<OperationResult> DeleteProductAsync(int id);
         Task<OperationResult> GetAllProductsAsync();
         Task<OperationResult> GetProductByIdAsync(int id);
-        Task<OperationResult> UpdateProductAsync(int id, Product updatedProduct);
+        Task<OperationResult> UpdateProductAsync(int id, AdminProductDto updatedProduct);
     }
 }
