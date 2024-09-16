@@ -13,8 +13,9 @@ namespace Model.Models
     {
         public int Id { get; set; }
         public decimal Price { get; set; }
-        public string Size { get; set; }
-        public string Color { get; set; }
+        public int SizeId { get; set; }
+        public int ColorId { get; set; }
+        public int Quantity { get; set; }
         [ForeignKey("Product")]
         public int ProductId { get; set; }
 

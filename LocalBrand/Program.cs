@@ -1,3 +1,5 @@
+using Business.Orders.Interfaces;
+using Business.Orders.Validator;
 using Business.Products.Interfaces;
 using Business.Products.Validator;
 using Infrastructure.Context;
@@ -40,10 +42,13 @@ namespace LocalBrand
             builder.Logging.AddDebug();
 
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IGenericRepository<Product>, GenericRepository<Product>>();
             builder.Services.AddScoped<IGenericRepository<ProductImage>, GenericRepository<ProductImage>>();
             builder.Services.AddScoped<IGenericRepository<Stock>, GenericRepository<Stock>>();
             builder.Services.AddScoped<IGenericRepository<ProductColorImage>, GenericRepository<ProductColorImage>>();
+            builder.Services.AddScoped<IGenericRepository<Order>, GenericRepository<Order>>();
+            builder.Services.AddScoped<IGenericRepository<OrderDetails>, GenericRepository<OrderDetails>>();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MyAppContext>(options =>

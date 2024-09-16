@@ -8,9 +8,10 @@ namespace Business.Products.Dtos
 {
     public class UserProductDto
     {
-        public int Id { get; set; }
+        public int ProductId { get; set; }
         public decimal Price { get; set; }
-        public string Size { get; set; }
-        public string Color { get; set; }
+        public int SizeId { get; set; }
+        public int ColorId { get; set; }
+        public int Quantity { get; set; }
     }
 }

@@ -18,5 +18,6 @@ namespace Infrastructure.IGenericRepository
         Task<OperationResult> DeleteAsync(int id);
         Task DeleteRangeAsync(IEnumerable<TEntity> entities);
         Task<IDbContextTransaction> BeginTransactionAsync();
+        Task SaveChangesAsync();
     }
 }

@@ -180,9 +180,12 @@ namespace Business.Products.Validator
             {
                 var existingProductResult = await _productrepository.GetByIdAsync(id);
 
-                if (existingProductResult.Success)
+                if (!existingProductResult.Success)
                 {
-                    var existingProduct = (Product)existingProductResult.Data;
+                    return existingProductResult;
+                }
+
+                var existingProduct = (Product)existingProductResult.Data;
 
                     existingProduct.Name = updatedProduct.Name;
                     existingProduct.Description = updatedProduct.Description;
@@ -231,21 +234,12 @@ namespace Business.Products.Validator
                     }
 
                     var updateresult = await _productrepository.UpdateAsync(existingProduct);
-                    if (updateresult.Success)
-                    {
-                        await transaction.CommitAsync();
-                        return updateresult;
-                    }
-                    else
-                    {
-                        await transaction.RollbackAsync();
-                        return updateresult;
-                    }
-                }
-                return existingProductResult;
+                    await transaction.CommitAsync();
+                    return updateresult;
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }

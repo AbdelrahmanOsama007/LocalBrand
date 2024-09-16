@@ -98,19 +98,10 @@ namespace Infrastructure.GenericRepository
             }
         }
 
-        public async Task<OperationResult> UpdateAsync(/*int id,*/TEntity updatedEntity)
+        public async Task<OperationResult> UpdateAsync(TEntity updatedEntity)
         {
             try
             {
-                //var entityType = typeof(TEntity).Name;
-                //var existingEntity = await _dbSet.FindAsync(id);
-                //if (existingEntity != null)
-                //{
-                //    _context.Entry(existingEntity).CurrentValues.SetValues(updatedEntity);
-                //    await _context.SaveChangesAsync();
-                //    return new OperationResult() { Success = true, Message = $"{entityType} Updated Successfully" };
-                //}
-                //return new OperationResult() { Success = false , Message = $"{entityType} Not Found"};
                 var entityType = typeof(TEntity).Name;
                 _dbSet.Update(updatedEntity);
                 await _context.SaveChangesAsync();
@@ -129,6 +120,10 @@ namespace Infrastructure.GenericRepository
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {
             return await _context.Database.BeginTransactionAsync();
+        }
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

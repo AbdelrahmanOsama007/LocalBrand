@@ -31,6 +31,7 @@ namespace Infrastructure.Context
             modelBuilder.Entity<Order>().HasQueryFilter(pi => !pi.IsDeleted);
             modelBuilder.Entity<OrderDetails>().HasQueryFilter(od => !od.IsDeleted);
             modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
+            modelBuilder.Entity<SubCategory>().HasQueryFilter(s => !s.IsDeleted);
 
             modelBuilder.Entity<Order>()
                 .HasIndex(o => o.OrderNumber)
