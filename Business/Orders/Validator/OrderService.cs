@@ -3,11 +3,11 @@ using Business.Orders.Interfaces;
 using Business.Products.Dtos;
 using Infrastructure.Context;
 using Infrastructure.IGenericRepository;
+using Microsoft.EntityFrameworkCore;
 using Model.Enums;
 using Model.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -89,7 +89,7 @@ namespace Business.Orders.Validator
                     var order = (Order)orderresult.Data;
                     foreach(var item in order.OrderDetails)
                     {
-                        var productstockresult = await _productrepository.GetByIdAsync(item.Id);
+                        var productstockresult = await _productrepository.GetByIdAsync(item.ProductId);
                         if (productstockresult.Success)
                         {
                             var productstock = (Product)productstockresult.Data;
@@ -172,7 +172,7 @@ namespace Business.Orders.Validator
                     order.UserEmail = updatedOrder.UserEmail;
                     order.UserPhone = updatedOrder.UserPhone;
 
-                    await _orderdetailsrepository.DeleteRangeAsync(order.OrderDetails);
+                var OrderDetailsList = new List<OrderDetails>();
                     foreach (var orderdetail in updatedOrder.Products)
                     {
                         var orderdetailsobject = new OrderDetails()
@@ -183,12 +183,37 @@ namespace Business.Orders.Validator
                             Quantity = orderdetail.Quantity,
                             ProductId = orderdetail.ProductId,
                         };
-                        order.OrderDetails.Add(orderdetailsobject);
-                    }
+                        OrderDetailsList.Add(orderdetailsobject);
 
-                    var updateresult = await _orderrepository.UpdateAsync(order);
-                    await transaction.CommitAsync();
-                    return updateresult;
+                    var productstockresult = await _productrepository.GetByIdAsync(orderdetail.ProductId);
+                    if (productstockresult.Success)
+                    {
+                        var productstock = (Product)productstockresult.Data;
+                        var result = productstock.Stock.FirstOrDefault(s => s.SizeId == orderdetail.SizeId && s.ColorId == orderdetail.ColorId);
+                        if (result != null)
+                        {
+                            var oldorderdetail = order.OrderDetails.FirstOrDefault(d => d.ProductId == result.ProductId && d.SizeId == result.SizeId && d.ColorId == result.ColorId);
+                            if (oldorderdetail != null)
+                            {
+                                if (oldorderdetail.Quantity > orderdetail.Quantity)
+                                {
+                                    result.Quantity = result.Quantity + (oldorderdetail.Quantity - orderdetail.Quantity);
+                                    await _productrepository.SaveChangesAsync();
+                                }
+                                else if (oldorderdetail.Quantity < orderdetail.Quantity)
+                                {
+                                    result.Quantity = result.Quantity - (orderdetail.Quantity - oldorderdetail.Quantity);
+                                    await _productrepository.SaveChangesAsync();
+                                }
+                            }
+                        }
+                    }
+                }
+                await _orderdetailsrepository.DeleteRangeAsync(order.OrderDetails);
+                order.OrderDetails = OrderDetailsList;
+                var updateresult = await _orderrepository.UpdateAsync(order);
+                await transaction.CommitAsync();
+                return updateresult;
             }
             catch (Exception ex)
             {
