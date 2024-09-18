@@ -26,7 +26,6 @@ namespace Infrastructure.Context
         public DbSet<Category> Categories { get; set; }
         public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<ProductColorImage> ProductColorImages { get; set; }
-        public MyAppContext(DbContextOptions<MyAppContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -8,10 +8,12 @@ using Infrastructure.Context;
 using Infrastructure.GenericRepository;
 using Infrastructure.IgenericRepository;
 using Infrastructure.IGenericRepository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Model.Models;
 using System.Security.Claims;
 using System.Text;
@@ -47,6 +49,7 @@ namespace LocalBrand
             builder.Logging.AddConsole();
             builder.Logging.AddDebug();
 
+            // Register services and repositories
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -60,45 +63,43 @@ namespace LocalBrand
             builder.Services.AddScoped<IGenericRepository<SubCategory>, GenericRepository<SubCategory>>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
+            // Add DbContext with SQL Server support
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MyAppContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
+            // Identity services
             builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<MyAppContext>()
                 .AddDefaultTokenProviders();
+
             // Configure JWT Authentication
             var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-            builder.Services.AddAuthentication(x =>
+            builder.Services.AddAuthentication(options =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(x =>
+            .AddJwtBearer(options =>
             {
-                x.SaveToken = true;
-                x.RequireHttpsMetadata = false;
-                x.TokenValidationParameters = new TokenValidationParameters
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    RoleClaimType = ClaimTypes.Role // Add this line
+                    RoleClaimType = ClaimTypes.Role // Ensure this line is present
                 };
-
-                options.UseLazyLoadingProxies().UseSqlServer(connectionString);
             });
-            //////////end////////////
-
-
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage(); // Show detailed error pages in development
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
@@ -125,10 +126,14 @@ namespace LocalBrand
 
             app.UseHttpsRedirection();
             app.UseCors("AllowAllDomains");
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
 
+            // Run the application
             app.Run();
+
+            // Seed Admin User
             static async Task SeedAdminUser(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
             {
                 var adminUsername = "admin"; // static username
