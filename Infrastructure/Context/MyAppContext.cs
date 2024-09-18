@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Model.Models;
 using Model.Enums;
 using System;
@@ -9,8 +10,12 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Context
 {
-    public class MyAppContext: DbContext
+    public class MyAppContext: IdentityDbContext<AppUser>
+
     {
+        public MyAppContext(DbContextOptions<MyAppContext> options) : base(options)
+        {
+        }
         public DbSet<Product> Products { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Color> Colors { get; set; }
