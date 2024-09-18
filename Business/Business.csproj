@@ -15,4 +15,9 @@
     <ProjectReference Include="..\Model\Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="SubCategories\Interfaces\" />
+    <Folder Include="SubCategories\Validator\" />
+  </ItemGroup>
+
 </Project>
