@@ -6,6 +6,7 @@ using Business.Products.Interfaces;
 using Business.Products.Validator;
 using Infrastructure.Context;
 using Infrastructure.GenericRepository;
+using Infrastructure.IgenericRepository;
 using Infrastructure.IGenericRepository;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,7 @@ namespace LocalBrand
             builder.Services.AddScoped<IGenericRepository<OrderDetails>, GenericRepository<OrderDetails>>();
             builder.Services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
             builder.Services.AddScoped<IGenericRepository<SubCategory>, GenericRepository<SubCategory>>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MyAppContext>(options =>

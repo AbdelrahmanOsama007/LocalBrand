@@ -2,6 +2,7 @@
 using Business.Products.Dtos;
 using Business.Products.Interfaces;
 using Infrastructure.Context;
+using Infrastructure.IgenericRepository;
 using Infrastructure.IGenericRepository;
 using Model.Enums;
 using Model.Models;
@@ -19,12 +20,14 @@ namespace Business.Products.Validator
         private readonly IGenericRepository<Stock> _stockrepository;
         private readonly IGenericRepository<ProductImage> _productimagerepository;
         private readonly IGenericRepository<ProductColorImage> _productcolorimagerepository;
-        public ProductService(IGenericRepository<Product> productrepository, IGenericRepository<Stock> stockrepository, IGenericRepository<ProductImage> productimagerepository, IGenericRepository<ProductColorImage> productcolorimagerepository)
+        private readonly IProductRepository _productRepository;
+        public ProductService(IGenericRepository<Product> productrepository, IGenericRepository<Stock> stockrepository, IGenericRepository<ProductImage> productimagerepository, IGenericRepository<ProductColorImage> productcolorimagerepository, IProductRepository productRepository)
         {
             _productrepository = productrepository;
             _stockrepository = stockrepository;
             _productimagerepository = productimagerepository;
             _productcolorimagerepository = productcolorimagerepository;
+            _productRepository = productRepository;
         }
         public async Task<OperationResult> AddProductAsync(AdminProductDto product)
         {
@@ -93,30 +96,37 @@ namespace Business.Products.Validator
 
         public async Task<OperationResult> GetAllProductsAsync()
         {
-            var result = await _productrepository.GetAllAsync();
-            if (result.Success)
+            try
             {
-                var productlist = (List<Product>)result.Data;
-                var productdtolist = new List<ProductDto>();
-
-                foreach (var product in productlist)
+                var result = await _productrepository.GetAllAsync();
+                if (result.Success)
                 {
-                    var productdto = new ProductDto()
+                    var productlist = (List<Product>)result.Data;
+                    var productdtolist = new List<ProductDto>();
+
+                    foreach (var product in productlist)
                     {
-                        Id = product.Id,
-                        Name = product.Name,
-                        Price = product.Price,
-                        Discount = product.Discount,
-                        CategoryId = product.SubCategoryId,
-                        ImageUrl = product.ProductImages.ToList()[0].Name,
-                    };
-                    productdtolist.Add(productdto);
+                        var productdto = new ProductDto()
+                        {
+                            Id = product.Id,
+                            Name = product.Name,
+                            Price = product.Price,
+                            Discount = product.Discount,
+                            SubCategoryId = product.SubCategoryId,
+                            ImageUrl = product.ProductImages.ToList()[0].Name,
+                        };
+                        productdtolist.Add(productdto);
+                    }
+                    return new OperationResult() { Success = true, Message = result.Message, Data = productdtolist };
                 }
-                return new OperationResult() { Success = true , Message = result.Message, Data = productdtolist};
+                else
+                {
+                    return result;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return result;
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
 
@@ -170,6 +180,40 @@ namespace Business.Products.Validator
             else
             {
                 return result;
+            }
+        }
+
+        public async Task<OperationResult> GetProductsBySubCategoryAsync(int id)
+        {
+            try
+            {
+                var result = await _productRepository.GetProductsBySubCaregory(id);
+                if (!result.Success)
+                {
+                    return result;
+                }
+
+                var productlist = (List<Product>)result.Data;
+                var productdtolist = new List<ProductDto>();
+
+                foreach (var product in productlist)
+                {
+                    var productdto = new ProductDto()
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        Price = product.Price,
+                        Discount = product.Discount,
+                        SubCategoryId = product.SubCategoryId,
+                        ImageUrl = product.ProductImages.ToList()[0].Name,
+                    };
+                    productdtolist.Add(productdto);
+                }
+                return new OperationResult() { Success = true, Message = result.Message, Data = productdtolist };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
 
