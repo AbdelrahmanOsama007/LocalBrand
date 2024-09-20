@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(MyAppContext))]
-    [Migration("20240919160643_m1")]
+    [Migration("20240920162809_m1")]
     partial class m1
     {
         /// <inheritdoc />
@@ -392,6 +392,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("BestSeller")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .IsRequired()

@@ -138,5 +138,27 @@ namespace LocalBrand.Controllers
                 return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
             }
         }
+        [HttpPost("GetBestSeller")]
+        public async Task<IActionResult> GetBestSellerProducts()
+        {
+            try
+            {
+                var result = await _productService.GetBestSellers();
+                if(result.Success)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    _logger.LogError(result.DevelopMessage);
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
+            }
+        }
     }
 }

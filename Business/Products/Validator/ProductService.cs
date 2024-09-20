@@ -2,8 +2,8 @@
 using Business.Products.Dtos;
 using Business.Products.Interfaces;
 using Infrastructure.Context;
-using Infrastructure.IgenericRepository;
 using Infrastructure.IGenericRepository;
+using Infrastructure.IRepository;
 using Model.Enums;
 using Model.Models;
 using System;
@@ -40,6 +40,7 @@ namespace Business.Products.Validator
                     Price = product.Price,
                     Discount = product.Discount,
                     SubCategoryId = product.SubCategoryId,
+                    BestSeller = product.BestSeller,
                     ProductImages = new List<ProductImage>(),
                     Stock = new List<Stock>(),
                     ProductColorImages = new List<ProductColorImage>()
@@ -113,7 +114,7 @@ namespace Business.Products.Validator
                             Price = product.Price,
                             Discount = product.Discount,
                             SubCategoryId = product.SubCategoryId,
-                            ImageUrl = product.ProductImages.ToList()[0].Name,
+                            Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name }
                         };
                         productdtolist.Add(productdto);
                     }
@@ -125,6 +126,40 @@ namespace Business.Products.Validator
                 }
             }
             catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
+            }
+        }
+
+        public async Task<OperationResult> GetBestSellers()
+        {
+            try
+            {
+                var productlistresult = await _productRepository.GetBestSellers();
+
+                if (!productlistresult.Success)
+                {
+                    return productlistresult;
+                }
+
+                var productlist = (List<Product>)productlistresult.Data;
+                var productsdto = new List<ProductDto>();
+                foreach (var product in productlist)
+                {
+                    var peoductdto = new ProductDto()
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        Price = product.Price,
+                        Discount = product.Discount,
+                        SubCategoryId = product.SubCategoryId,
+                        Images = new List<string>() { product.ProductImages.ToList()[0].Name , product.ProductImages.ToList()[1].Name }
+                    };
+                    productsdto.Add(peoductdto);
+                }
+                return new OperationResult() { Success = true, Message = productlistresult.Message, Data = productsdto };
+            }
+            catch(Exception ex)
             {
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
@@ -205,7 +240,7 @@ namespace Business.Products.Validator
                         Price = product.Price,
                         Discount = product.Discount,
                         SubCategoryId = product.SubCategoryId,
-                        ImageUrl = product.ProductImages.ToList()[0].Name,
+                        Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name }
                     };
                     productdtolist.Add(productdto);
                 }
@@ -236,6 +271,7 @@ namespace Business.Products.Validator
                     existingProduct.Price = updatedProduct.Price;
                     existingProduct.Discount = updatedProduct.Discount;
                     existingProduct.SubCategoryId = updatedProduct.SubCategoryId;
+                    existingProduct.BestSeller = updatedProduct.BestSeller;
 
                     await _productcolorimagerepository.DeleteRangeAsync(existingProduct.ProductColorImages);
                     await _productimagerepository.DeleteRangeAsync(existingProduct.ProductImages);
