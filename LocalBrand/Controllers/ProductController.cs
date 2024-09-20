@@ -43,7 +43,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetProductById")]
-        public async Task<IActionResult> GetProductById(int id)
+        public async Task<IActionResult> GetProductById([FromBody]int id)
         {
             try
             {

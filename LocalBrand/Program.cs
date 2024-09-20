@@ -133,34 +133,6 @@ namespace LocalBrand
 
             // Run the application
             app.Run();
-
-            // Seed Admin User
-            static async Task SeedAdminUser(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
-            {
-                var adminUsername = "admin"; // static username
-                var adminPassword = "Admin@123"; // static password
-
-                if (!await roleManager.RoleExistsAsync("Admin"))
-                {
-                    await roleManager.CreateAsync(new IdentityRole("Admin"));
-                }
-
-                var adminUser = await userManager.FindByNameAsync(adminUsername);
-                if (adminUser == null)
-                {
-                    adminUser = new AppUser
-                    {
-                        UserName = adminUsername,
-                        Email = "admin@example.com",
-                    };
-
-                    var result = await userManager.CreateAsync(adminUser, adminPassword);
-                    if (result.Succeeded)
-                    {
-                        await userManager.AddToRoleAsync(adminUser, "Admin");
-                    }
-                }
-            }
         }
     }
 }
