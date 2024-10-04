@@ -120,7 +120,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetProductBySubCategory")]
-        public async Task<IActionResult> GetProductBySubCategory(int id)
+        public async Task<IActionResult> GetProductBySubCategory([FromBody]int id)
         {
             try
             {
@@ -153,6 +153,25 @@ namespace LocalBrand.Controllers
                     _logger.LogError(result.DevelopMessage);
                     return Ok(result);
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
+            }
+        }
+        [HttpPost("GetProductsByCatId")]
+        public async Task<IActionResult> GetProductsByCatId([FromBody]int id)
+        {
+            try
+            {
+                var result = await _productService.GetProductsByCategoryAsync(id);
+                if (!string.IsNullOrEmpty(result.DevelopMessage))
+                {
+                    _logger.LogError(result.DevelopMessage);
+                    return Ok(result);
+                }
+                return Ok(result);
             }
             catch (Exception ex)
             {

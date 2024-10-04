@@ -40,7 +40,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("UpdateOrder")]
-        public async Task<IActionResult> UpdateOrder(int id,AdminOrderDto order)
+        public async Task<IActionResult> UpdateOrder(int id, OrderDto order)
         {
             try
             {

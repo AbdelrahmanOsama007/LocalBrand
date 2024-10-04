@@ -9,6 +9,7 @@ namespace Business.Images.Dtos
     public class ColorImagesDto
     {
         public int ColorId { get; set; }
+        public string ColorCode { get; set; }
         public List<string> ImageUrls { get; set; }
     }
 }

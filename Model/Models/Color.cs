@@ -11,6 +11,7 @@ namespace Model.Models
     {
         public int Id { get; set; }
         public string ColorName { get; set; }
+        public string ColorCode { get; set; }
         public virtual ICollection<Stock> Stocks { get; set; }
         public virtual ICollection<ProductColorImage> ProductColorImages { get; set; }
     }

@@ -4,6 +4,8 @@ using Business.Orders.Interfaces;
 using Business.Orders.Validator;
 using Business.Products.Interfaces;
 using Business.Products.Validator;
+using Business.Wishlist.Interfaces;
+using Business.Wishlist.Validator;
 using Infrastructure.Context;
 using Infrastructure.GenericRepository;
 using Infrastructure.IGenericRepository;
@@ -63,6 +65,8 @@ namespace LocalBrand
             builder.Services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
             builder.Services.AddScoped<IGenericRepository<SubCategory>, GenericRepository<SubCategory>>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<ICategoryRepository,  CategoryRepository>();
+            builder.Services.AddScoped<IWishlistService, WishlistService>();
 
             // Add DbContext with SQL Server support
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

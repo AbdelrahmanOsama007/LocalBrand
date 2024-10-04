@@ -16,5 +16,6 @@ namespace Business.Products.Dtos
         public int Discount { get; set; } = 0;
         public int SubCategoryId { get; set; }
         public List<string> Images { get; set; }
+        public bool IsOutOfStock { get; set; }
     }
 }

@@ -10,6 +10,8 @@ namespace Infrastructure.IRepository
     public interface IProductRepository
     {
         Task<OperationResult> GetProductsBySubCaregory(int id);
+        Task<OperationResult> GetProductsByCategoryId(int categoryid);
         Task<OperationResult> GetBestSellers();
+        Task<OperationResult> GetWishlistProducts(int[] Ids);
     }
 }

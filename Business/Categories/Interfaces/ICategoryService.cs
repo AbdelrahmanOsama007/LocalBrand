@@ -14,5 +14,6 @@ namespace Business.Categories.Interfaces
         Task<OperationResult> DeleteCategoryAsync(int id);
         Task<OperationResult> UpdateCategoryAsync(int id, NewCategoryDto updatedcategory);
         Task<OperationResult> GetAllCategoriesAsync();
+        Task<OperationResult> GetSubCatsByCatId(int catId);
     }
 }

@@ -2,6 +2,7 @@
 using Business.Categories.Interfaces;
 using Business.SubCategories.Dtos;
 using Infrastructure.IGenericRepository;
+using Infrastructure.IRepository;
 using Model.Models;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,12 @@ namespace Business.Categories.Validator
     {
         private readonly IGenericRepository<Category> _categoryrepository;
         private readonly IGenericRepository<SubCategory> _subcategoryrepository;
-        public CategoryService(IGenericRepository<Category> categoryRepository, IGenericRepository<SubCategory> subcategoryrepository)
+        private readonly ICategoryRepository _category;
+        public CategoryService(IGenericRepository<Category> categoryRepository, IGenericRepository<SubCategory> subcategoryrepository, ICategoryRepository category)
         {
             _categoryrepository = categoryRepository;
             _subcategoryrepository = subcategoryrepository;
+            _category = category;
         }
         public async Task<OperationResult> AddCategoryAsync(NewCategoryDto category)
         {
@@ -87,6 +90,37 @@ namespace Business.Categories.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
+
+        public async Task<OperationResult> GetSubCatsByCatId(int catId)
+        {
+            try
+            {
+                var result = await _category.GetSubCatByCatId(catId);
+                if (!result.Success)
+                {
+                    return result;
+                }
+
+                var SubCatList = (List<SubCategory>)result.Data;
+                var SubCategories = new List<SubCategoryDto>();
+                foreach(var subcat in SubCatList)
+                {
+                    var subcatdto = new SubCategoryDto()
+                    {
+                        SubCategoryId = subcat.Id,
+                        CategoryId = subcat.Id,
+                        SubCategoryName = subcat.Name,
+                    };
+                    SubCategories.Add(subcatdto);
+                }
+                return new OperationResult() { Success = true, Message = result.Message, Data = SubCategories };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
+            }
+        }
+
         public async Task<OperationResult> UpdateCategoryAsync(int id, NewCategoryDto updatedcategory)
         {
             using var transaction = await _categoryrepository.BeginTransactionAsync();

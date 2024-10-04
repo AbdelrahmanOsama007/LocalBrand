@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LocalBrand.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -86,6 +88,28 @@ namespace LocalBrand.Controllers
                     _logger.LogError(result.DevelopMessage);
                 }
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
+            }
+        }
+        [HttpPost("GetSubCategories")]
+        public async Task<IActionResult> GetSubCats([FromBody]int id)
+        {
+            try
+            {
+                var result = await _categoryService.GetSubCatsByCatId(id);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    _logger.LogError(result.DevelopMessage);
+                    return Ok(result);
+                }
             }
             catch (Exception ex)
             {

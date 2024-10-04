@@ -36,38 +36,49 @@ namespace Business.Orders.Validator
                 {
                     OrderNumber = await GenerateUniqueOrderNumber(),
                     OrderDate = order.OrderDate,
-                    UserName = order.UserName,
-                    UserEmail = order.UserEmail,
-                    UserPhone = order.UserPhone,
                     OrderStatus = Model.Enums.OrderStatusEnum.Processing,
-                    OrderDetails = new List<OrderDetails>()
+                    OrderDetails = new List<OrderDetails>(),
+                    UserAddress = new UserAddress() { FirstName = order.FirstName, LastName = order.LastName, City = order.City, StreetAddress = order.StreetAddress, Appartment = order.Appartment,
+                                                      PhoneNumber = order.PhoneNumber, Email = order.Email, PaymentMethod = order.PaymentMethod }
                 };
-                
+                decimal subtotal = 0;
+                decimal total = 0;
+
                 foreach (var item in order.Products)
                 {
+
+                    Product? product = null;
+                    var getproduct = await _productrepository.GetByIdAsync(item.ProductId);
+                    if (!getproduct.Success)
+                    {
+                        return getproduct;
+                    }
+
+                    product = (Product)getproduct.Data;
+                    subtotal += product.Price;
+                    total += product.Price - (product.Price * (product.Discount / 100));
+
                     var orderitem = new OrderDetails()
                     {
                         ProductId = item.ProductId,
-                        Price = item.Price,
+                        SubTotalPrice = product.Price,
+                        TotalPrice = product.Price - (product.Price * (product.Discount / 100)),
                         SizeId = item.SizeId,
                         ColorId = item.ColorId,
                         Quantity = item.Quantity,
                     };
                     neworder.OrderDetails.Add(orderitem);
 
-                    var productstockresult = await _productrepository.GetByIdAsync(item.ProductId);
-                    if (productstockresult.Success)
-                    {
-                        var productstock = (Product)productstockresult.Data;
-                        var result = productstock.Stock.FirstOrDefault(s => s.SizeId == item.SizeId && s.ColorId == item.ColorId);
-                        if (result != null)
+                    var result = product.Stock.FirstOrDefault(s => s.SizeId == item.SizeId && s.ColorId == item.ColorId);
+                    if (result != null)
                         {
                             result.Quantity = result.Quantity - item.Quantity;
                             await _productrepository.SaveChangesAsync();
-                        }
                     }
-
                 }
+
+                neworder.SubTotalPrice = subtotal;
+                neworder.TotalPrice = total;
                 await _orderrepository.AddAsync(neworder);
                 await transaction.CommitAsync();
                 return new OperationResult() { Success = true, Message = "Ordered Successfully" };
@@ -127,9 +138,16 @@ namespace Business.Orders.Validator
                         {
                             OrderDate = order.OrderDate,
                             OrderNumber = order.OrderNumber,
-                            UserName = order.UserName,
-                            UserEmail = order.UserEmail,
-                            UserPhone = order.UserPhone,
+                            FirstName = order.UserAddress.FirstName,
+                            LastName = order.UserAddress.LastName,
+                            City = order.UserAddress.City,
+                            StreetAddress = order.UserAddress.StreetAddress,
+                            Appartment = order.UserAddress.Appartment,
+                            PhoneNumber = order.UserAddress.PhoneNumber,
+                            PaymentMethod = order.UserAddress.PaymentMethod,
+                            Email = order.UserAddress.Email,
+                            SubTotal = order.SubTotalPrice,
+                            Total = order.TotalPrice,
                             Products = new List<UserProductDto>()
                         };
                         foreach (var orderdetail in order.OrderDetails)
@@ -137,7 +155,8 @@ namespace Business.Orders.Validator
                             var orderdetaildto = new UserProductDto()
                             {
                                 ProductId = orderdetail.ProductId,
-                                Price = orderdetail.Price,
+                                Total = orderdetail.TotalPrice,
+                                SubTotal = orderdetail.SubTotalPrice,
                                 SizeId = orderdetail.SizeId,
                                 ColorId = orderdetail.ColorId,
                                 Quantity = orderdetail.Quantity,
@@ -155,7 +174,7 @@ namespace Business.Orders.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-        public async Task<OperationResult> UpdateOrderAsync(int id, AdminOrderDto updatedOrder)
+        public async Task<OperationResult> UpdateOrderAsync(int id, OrderDto updatedOrder)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -167,17 +186,39 @@ namespace Business.Orders.Validator
                 }
                 var order = (Order)orderresult.Data;
 
-                    order.OrderDate = updatedOrder.OrderDate;
-                    order.UserName = updatedOrder.UserName;
-                    order.UserEmail = updatedOrder.UserEmail;
-                    order.UserPhone = updatedOrder.UserPhone;
+                order.OrderDate = updatedOrder.OrderDate;
+                order.UserAddress.FirstName = updatedOrder.FirstName;
+                order.UserAddress.LastName = updatedOrder.LastName;
+                order.UserAddress.City = updatedOrder.City;
+                order.UserAddress.Appartment = updatedOrder.Appartment;
+                order.UserAddress.StreetAddress = updatedOrder.StreetAddress;
+                order.UserAddress.PhoneNumber = updatedOrder.PhoneNumber;
+                order.UserAddress.Email = updatedOrder.Email;
+
+                decimal subtotal = 0;
+                decimal total = 0;
+
+
 
                 var OrderDetailsList = new List<OrderDetails>();
                     foreach (var orderdetail in updatedOrder.Products)
                     {
-                        var orderdetailsobject = new OrderDetails()
+
+                        Product? product = null;
+                        var getproduct = await _productrepository.GetByIdAsync(orderdetail.ProductId);
+                        if (!getproduct.Success)
                         {
-                            Price = orderdetail.Price,
+                            return getproduct;
+                        }
+
+                    product = (Product)getproduct.Data;
+                    subtotal += product.Price;
+                    total += product.Price - (product.Price * (product.Discount / 100));
+
+                    var orderdetailsobject = new OrderDetails()
+                        {
+                            SubTotalPrice = product.Price,
+                            TotalPrice = product.Price - (product.Price * (product.Discount / 100)),
                             SizeId = orderdetail.SizeId,
                             ColorId = orderdetail.ColorId,
                             Quantity = orderdetail.Quantity,

@@ -26,6 +26,7 @@ namespace Infrastructure.Context
         public DbSet<Category> Categories { get; set; }
         public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<ProductColorImage> ProductColorImages { get; set; }
+        public DbSet<UserAddress> UserAddresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,10 +67,10 @@ namespace Infrastructure.Context
                                                                new SubCategory() { Id =2, Name= "Hoddie", CategoryId = 1},
                                                                new SubCategory() { Id =3, Name= "Short", CategoryId = 1}};
 
-            List<Color> colors = new List<Color>() { new Color() { Id = 1, ColorName = ColorEnum.black.ToString()},
-                                                     new Color() { Id = 2, ColorName = ColorEnum.white.ToString()},
-                                                     new Color() { Id = 3, ColorName = ColorEnum.red.ToString()},
-                                                     new Color() { Id = 4, ColorName = ColorEnum.blue.ToString()}};
+            List<Color> colors = new List<Color>() { new Color() { Id = 1, ColorName = ColorEnum.black.ToString(), ColorCode = "#000"},
+                                                     new Color() { Id = 2, ColorName = ColorEnum.white.ToString(), ColorCode = "#fff"},
+                                                     new Color() { Id = 3, ColorName = ColorEnum.red.ToString(), ColorCode = "#FF0000"},
+                                                     new Color() { Id = 4, ColorName = ColorEnum.blue.ToString(), ColorCode = "#0000FF"}};
 
             List<Size> sizes = new List<Size>() { new Size() { Id = 1, SizeName = SizeEnum.Small.ToString()},
                                                   new Size() {Id = 2, SizeName = SizeEnum.Medium.ToString()},

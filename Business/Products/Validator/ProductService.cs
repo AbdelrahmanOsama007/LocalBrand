@@ -107,6 +107,9 @@ namespace Business.Products.Validator
 
                     foreach (var product in productlist)
                     {
+                        var IsOutOfStock = true;
+                        IsOutOfStock = CheckStock(product);
+
                         var productdto = new ProductDto()
                         {
                             Id = product.Id,
@@ -114,7 +117,8 @@ namespace Business.Products.Validator
                             Price = product.Price,
                             Discount = product.Discount,
                             SubCategoryId = product.SubCategoryId,
-                            Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name }
+                            Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name },
+                            IsOutOfStock = IsOutOfStock
                         };
                         productdtolist.Add(productdto);
                     }
@@ -146,6 +150,9 @@ namespace Business.Products.Validator
                 var productsdto = new List<ProductDto>();
                 foreach (var product in productlist)
                 {
+                    var IsOutOfStock = true;
+                    IsOutOfStock = CheckStock(product);
+
                     var peoductdto = new ProductDto()
                     {
                         Id = product.Id,
@@ -153,7 +160,8 @@ namespace Business.Products.Validator
                         Price = product.Price,
                         Discount = product.Discount,
                         SubCategoryId = product.SubCategoryId,
-                        Images = new List<string>() { product.ProductImages.ToList()[0].Name , product.ProductImages.ToList()[1].Name }
+                        Images = new List<string>() { product.ProductImages.ToList()[0].Name , product.ProductImages.ToList()[1].Name },
+                        IsOutOfStock = IsOutOfStock
                     };
                     productsdto.Add(peoductdto);
                 }
@@ -187,6 +195,7 @@ namespace Business.Products.Validator
                         colorEntry = new ColorImagesDto()
                         {
                             ColorId = colorimages.ColorId,
+                            ColorCode = colorimages.Color.ColorCode,
                             ImageUrls = new List<string>()
                         };
                         ColorImagesList.Add(colorEntry);
@@ -200,21 +209,63 @@ namespace Business.Products.Validator
                     }
                 }
 
+                var IsOutOfStock = true;
+                IsOutOfStock = CheckStock(productobject);
+
                 ProductDetailsDto productdto = new ProductDetailsDto()
                 {
                     Id = productobject.Id,
                     Name = productobject.Name,
                     Discount = productobject.Discount,
                     Price = productobject.Price,
-                    CategoryId= productobject.SubCategoryId,
+                    SubCategoryId= productobject.SubCategoryId,
                     SizesAndColorsQuantity = ProductInfo,
-                    ColorImages = ColorImagesList
+                    ColorImages = ColorImagesList,
+                    IsOutOfStock= IsOutOfStock,
                 };
                 return new OperationResult() { Success = true , Message = result.Message, Data = productdto};
             }
             else
             {
                 return result;
+            }
+        }
+
+        public async Task<OperationResult> GetProductsByCategoryAsync(int categoryId)
+        {
+            try
+            {
+                var result = await _productRepository.GetProductsByCategoryId(categoryId);
+                if (!result.Success)
+                {
+                    return result;
+                }
+
+                var productlist = (List<Product>)result.Data;
+                var productdtolist = new List<ProductDto>();
+
+                foreach (var product in productlist)
+                {
+                    var IsOutOfStock = true;
+                    IsOutOfStock = CheckStock(product);
+
+                    var productdto = new ProductDto()
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        Price = product.Price,
+                        Discount = product.Discount,
+                        SubCategoryId = product.SubCategoryId,
+                        Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name },
+                        IsOutOfStock= IsOutOfStock
+                    };
+                    productdtolist.Add(productdto);
+                }
+                return new OperationResult() { Success = true, Message = result.Message, Data = productdtolist };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
 
@@ -233,6 +284,9 @@ namespace Business.Products.Validator
 
                 foreach (var product in productlist)
                 {
+                    var IsOutOfStock = true;
+                    IsOutOfStock = CheckStock(product);
+
                     var productdto = new ProductDto()
                     {
                         Id = product.Id,
@@ -240,7 +294,8 @@ namespace Business.Products.Validator
                         Price = product.Price,
                         Discount = product.Discount,
                         SubCategoryId = product.SubCategoryId,
-                        Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name }
+                        Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name },
+                        IsOutOfStock = IsOutOfStock
                     };
                     productdtolist.Add(productdto);
                 }
@@ -322,6 +377,17 @@ namespace Business.Products.Validator
                 await transaction.RollbackAsync();
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
+        }
+        private bool CheckStock (Product product)
+        {
+            foreach (var stock in product.Stock)
+            {
+                if (stock.Quantity != 0)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
