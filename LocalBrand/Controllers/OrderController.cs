@@ -22,15 +22,22 @@ namespace LocalBrand.Controllers
         {
             try
             {
-                var result = await _orderService.AddOrderAsync(order);
-                if (result.Success)
+                if(ModelState.IsValid)
                 {
-                    return Ok(result);
+                    var result = await _orderService.AddOrderAsync(order);
+                    if (result.Success)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        _logger.LogError(result.DevelopMessage);
+                        return Ok(result);
+                    }
                 }
                 else
                 {
-                    _logger.LogError(result.DevelopMessage);
-                    return Ok(result);
+                    return BadRequest();
                 }
             }
             catch (Exception ex)
@@ -44,15 +51,22 @@ namespace LocalBrand.Controllers
         {
             try
             {
-                var result = await _orderService.UpdateOrderAsync(id, order);
-                if (result.Success)
+                if (ModelState.IsValid)
                 {
-                    return Ok(result);
+                    var result = await _orderService.UpdateOrderAsync(id, order);
+                    if (result.Success)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        _logger.LogError(result.DevelopMessage);
+                        return Ok(result);
+                    }
                 }
                 else
                 {
-                    _logger.LogError(result.DevelopMessage);
-                    return Ok(result);
+                    return BadRequest();
                 }
             }
             catch (Exception e)

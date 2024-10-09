@@ -75,5 +75,24 @@ namespace Infrastructure.Repository
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
+        public async Task<OperationResult> CheckStockQuantity(CartInfo productinfo)
+        {
+            try
+            {
+                var product = await _context.Stocks.FirstOrDefaultAsync(p => p.ProductId == productinfo.ProductId && p.SizeId == productinfo.SizeId && p.ColorId == productinfo.ColorId);
+                if(product != null)
+                {
+                    return new OperationResult() { Success = true, Message = "Product retrieved successfully", Data = product};
+                }
+                else
+                {
+                    return new OperationResult() { Success = false, Message = "Product not found" };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
+            }
+        }
     }
 }

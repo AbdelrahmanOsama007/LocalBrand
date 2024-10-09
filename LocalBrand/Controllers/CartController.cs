@@ -1,25 +1,26 @@
-﻿using Business.Wishlist.Interfaces;
+﻿using Business.Cart.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Model.Models;
 
 namespace LocalBrand.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class WishlistController : Controller
+    public class CartController : Controller
     {
         private readonly ILogger<WishlistController> _logger;
-        private readonly IWishlistService _wishlistService;
-        public WishlistController(IWishlistService wishlistService, ILogger<WishlistController> logger)
+        private readonly ICartService _cartService;
+        public CartController(ILogger<WishlistController> logger, ICartService cartService)
         {
             _logger = logger;
-            _wishlistService = wishlistService;
+            _cartService = cartService;
         }
-        [HttpPost("GetWishListProducts")]
-        public async Task<IActionResult> GetWishlistProducts([FromBody] int[] Ids)
+        [HttpPost("CheckStockQuantity")]
+        public async Task<IActionResult> CheckStockQuantity(CartInfo productinfo)
         {
             try
             {
-                var result = await _wishlistService.GetWishlistProducts(Ids);
+                var result = await _cartService.CheckStockQuantity(productinfo);
                 if (string.IsNullOrEmpty(result.DevelopMessage))
                 {
                     return Ok(result);

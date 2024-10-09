@@ -72,15 +72,16 @@ namespace Infrastructure.Context
                                                      new Color() { Id = 3, ColorName = ColorEnum.red.ToString(), ColorCode = "#FF0000"},
                                                      new Color() { Id = 4, ColorName = ColorEnum.blue.ToString(), ColorCode = "#0000FF"}};
 
-            List<Size> sizes = new List<Size>() { new Size() { Id = 1, SizeName = SizeEnum.Small.ToString()},
-                                                  new Size() {Id = 2, SizeName = SizeEnum.Medium.ToString()},
-                                                  new Size() {Id = 3, SizeName = SizeEnum.Large.ToString()},
-                                                  new Size() {Id = 4, SizeName = SizeEnum.XLarge.ToString()},
-                                                  new Size(){Id = 5, SizeName = SizeEnum.Size32.ToString()},
-                                                  new Size(){Id = 6, SizeName = SizeEnum.Size34.ToString()},
-                                                  new Size(){Id = 7, SizeName = SizeEnum.Size36.ToString()},
-                                                  new Size(){Id = 8, SizeName = SizeEnum.Size38.ToString()},
-                                                  new Size(){Id = 9, SizeName = SizeEnum.Size40.ToString()}};
+            List<Size> sizes = new List<Size>() { new Size() { Id = 1, SizeName = SizeEnum.Small.ToString(), SizeKey = "S"},
+                                                  new Size() {Id = 2, SizeName = SizeEnum.Medium.ToString(), SizeKey = "M"},
+                                                  new Size() {Id = 3, SizeName = SizeEnum.Large.ToString(), SizeKey = "L"},
+                                                  new Size() {Id = 4, SizeName = SizeEnum.XLarge.ToString(), SizeKey = "XL"},
+                                                  new Size() {Id = 5, SizeName = SizeEnum.XXLarge.ToString(), SizeKey = "XXL"},
+                                                  new Size() {Id = 6, SizeName = SizeEnum.Size32.ToString(), SizeKey = "32"},
+                                                  new Size() {Id = 7, SizeName = SizeEnum.Size34.ToString(), SizeKey = "34"},
+                                                  new Size() {Id = 8, SizeName = SizeEnum.Size36.ToString(), SizeKey = "36"},
+                                                  new Size() {Id = 9, SizeName = SizeEnum.Size38.ToString(), SizeKey = "38"},
+                                                  new Size() {Id = 10, SizeName = SizeEnum.Size40.ToString(), SizeKey = "40"}};
 
             modelBuilder.Entity<Category>()
             .HasData(categories);

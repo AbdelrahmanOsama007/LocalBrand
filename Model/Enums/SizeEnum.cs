@@ -12,10 +12,11 @@ namespace Model.Enums
         Medium = 2,
         Large = 3,
         XLarge = 4,
-        Size32 = 5,
-        Size34 = 6,
-        Size36 = 7,
-        Size38 = 8,
-        Size40 = 9
+        XXLarge = 5,
+        Size32 = 6,
+        Size34 = 7,
+        Size36 = 8,
+        Size38 = 9,
+        Size40 = 10
     }
 }

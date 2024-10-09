@@ -110,11 +110,14 @@ namespace Business.Products.Validator
                         var IsOutOfStock = true;
                         IsOutOfStock = CheckStock(product);
 
+                        var ActualPrice = GetActualPrice(product.Price, product.Discount);
+
                         var productdto = new ProductDto()
                         {
                             Id = product.Id,
                             Name = product.Name,
-                            Price = product.Price,
+                            PriceBeforeDiscount = product.Price,
+                            PriceAfterDiscount = ActualPrice,
                             Discount = product.Discount,
                             SubCategoryId = product.SubCategoryId,
                             Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name },
@@ -153,11 +156,14 @@ namespace Business.Products.Validator
                     var IsOutOfStock = true;
                     IsOutOfStock = CheckStock(product);
 
+                    var ActualPrice = GetActualPrice(product.Price, product.Discount);
+
                     var peoductdto = new ProductDto()
                     {
                         Id = product.Id,
                         Name = product.Name,
-                        Price = product.Price,
+                        PriceBeforeDiscount = product.Price,
+                        PriceAfterDiscount = ActualPrice,
                         Discount = product.Discount,
                         SubCategoryId = product.SubCategoryId,
                         Images = new List<string>() { product.ProductImages.ToList()[0].Name , product.ProductImages.ToList()[1].Name },
@@ -179,11 +185,11 @@ namespace Business.Products.Validator
             if(result.Success)
             {
                 var productobject = (Product)result.Data;
-                var ProductInfo = new List<Tuple<string, string, int>>();
+                var ProductInfo = new List<ProductInfoDto>();
 
                 foreach (var stock in productobject.Stock)
                 {
-                    ProductInfo.Add(new Tuple<string, string, int>(((SizeEnum)stock.SizeId).ToString(),((ColorEnum)stock.ColorId).ToString(),stock.Quantity));
+                    ProductInfo.Add(new ProductInfoDto() {SizeId = stock.SizeId, ColorId = stock.ColorId, SizeName = stock.Size.SizeKey});
                 }
 
                 var ColorImagesList = new List<ColorImagesDto>();
@@ -211,13 +217,15 @@ namespace Business.Products.Validator
 
                 var IsOutOfStock = true;
                 IsOutOfStock = CheckStock(productobject);
+                var ActualPrice = GetActualPrice(productobject.Price, productobject.Discount);
 
                 ProductDetailsDto productdto = new ProductDetailsDto()
                 {
                     Id = productobject.Id,
                     Name = productobject.Name,
                     Discount = productobject.Discount,
-                    Price = productobject.Price,
+                    PriceBeforeDiscount = productobject.Price,
+                    PriceAfterDiscount = ActualPrice,
                     SubCategoryId= productobject.SubCategoryId,
                     SizesAndColorsQuantity = ProductInfo,
                     ColorImages = ColorImagesList,
@@ -249,11 +257,14 @@ namespace Business.Products.Validator
                     var IsOutOfStock = true;
                     IsOutOfStock = CheckStock(product);
 
+                    var ActualPrice = GetActualPrice(product.Price, product.Discount);
+
                     var productdto = new ProductDto()
                     {
                         Id = product.Id,
                         Name = product.Name,
-                        Price = product.Price,
+                        PriceBeforeDiscount = product.Price,
+                        PriceAfterDiscount = ActualPrice,
                         Discount = product.Discount,
                         SubCategoryId = product.SubCategoryId,
                         Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name },
@@ -287,11 +298,14 @@ namespace Business.Products.Validator
                     var IsOutOfStock = true;
                     IsOutOfStock = CheckStock(product);
 
+                    var ActualPrice = GetActualPrice(product.Price, product.Discount);
+
                     var productdto = new ProductDto()
                     {
                         Id = product.Id,
                         Name = product.Name,
-                        Price = product.Price,
+                        PriceBeforeDiscount = product.Price,
+                        PriceAfterDiscount = ActualPrice,
                         Discount = product.Discount,
                         SubCategoryId = product.SubCategoryId,
                         Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name },
@@ -388,6 +402,17 @@ namespace Business.Products.Validator
                 }
             }
             return true;
+        }
+        private decimal GetActualPrice(decimal price, int discount)
+        {
+            decimal ActualPrice;
+            if(discount != 0)
+            {
+                ActualPrice = price - (price * discount / 100);
+                return ActualPrice;
+            }
+            ActualPrice = price;
+            return ActualPrice;
         }
     }
 }
