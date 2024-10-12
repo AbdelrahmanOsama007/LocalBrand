@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Cart\Dtos\" />
+    <Folder Include="Email\Dtos\" />
     <Folder Include="SubCategories\Interfaces\" />
     <Folder Include="SubCategories\Validator\" />
   </ItemGroup>
