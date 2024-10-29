@@ -39,7 +39,7 @@ namespace Business.Orders.Validator
                     OrderStatus = Model.Enums.OrderStatusEnum.Processing,
                     OrderDetails = new List<OrderDetails>(),
                     UserAddress = new UserAddress() { FirstName = order.FirstName, LastName = order.LastName, City = order.City, StreetAddress = order.StreetAddress, Appartment = order.Appartment,
-                                                      PhoneNumber = order.PhoneNumber, Email = order.Email, PaymentMethod = order.PaymentMethod }
+                                                      PhoneNumber = order.PhoneNumber, Email = order.Email, PaymentMethod = order.PaymentMethod.ToString() }
                 };
                 decimal subtotal = 0;
                 decimal total = 0;

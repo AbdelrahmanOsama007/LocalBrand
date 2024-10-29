@@ -11,6 +11,7 @@ namespace Model.Models
     {
         public int Id { get; set; }
         public string SizeName { get; set; }
+        public string SizeKey { get; set; }
         public int Indicator { get; set; }
         public virtual ICollection<Stock> Stock { get; set; }
     }

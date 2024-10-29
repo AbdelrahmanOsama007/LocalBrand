@@ -66,15 +66,22 @@ namespace LocalBrand.Controllers
         {
             try
             {
-                var result = await _productService.AddProductAsync(product);
-                if (result.Success)
+                if(ModelState.IsValid)
                 {
-                    return Ok(result);
+                    var result = await _productService.AddProductAsync(product);
+                    if (result.Success)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        _logger.LogError(result.DevelopMessage);
+                        return Ok(result);
+                    }
                 }
                 else
                 {
-                    _logger.LogError(result.DevelopMessage);
-                    return Ok(result);
+                    return BadRequest();
                 }
             }
             catch (Exception ex)
@@ -88,12 +95,19 @@ namespace LocalBrand.Controllers
         {
             try
             {
-                var result = await _productService.UpdateProductAsync(id, product);
-                if (!string.IsNullOrEmpty(result.DevelopMessage))
+                if (ModelState.IsValid)
                 {
-                    _logger.LogError(result.DevelopMessage);
+                    var result = await _productService.UpdateProductAsync(id, product);
+                    if (!string.IsNullOrEmpty(result.DevelopMessage))
+                    {
+                        _logger.LogError(result.DevelopMessage);
+                    }
+                    return Ok(result);
                 }
-                return Ok(result);
+                else
+                {
+                    return BadRequest();
+                }
             }
             catch (Exception ex)
             {

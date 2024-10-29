@@ -12,11 +12,12 @@ namespace Business.Products.Dtos
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public decimal Price { get; set; }
+        public decimal PriceBeforeDiscount { get; set; }
+        public decimal PriceAfterDiscount { get; set; }
         public int Discount { get; set; } = 0;
         public int SubCategoryId { get; set; }
         public bool IsOutOfStock { get; set; }
         public List<ColorImagesDto> ColorImages { get; set; }
-        public List<Tuple<string, string, int>> SizesAndColorsQuantity { get; set; } = new List<Tuple<string, string, int>>();
+        public List<ProductInfoDto> SizesAndColorsQuantity { get; set; }
     }
 }
