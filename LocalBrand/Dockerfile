@@ -1,7 +1,7 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-RUN adduser --disabled-password --gecos "" app
+RUN id -u app &>/dev/null || useradd -m app && mkdir -p /app && chown app:app /app
 USER app
 WORKDIR /app
 EXPOSE 8080
