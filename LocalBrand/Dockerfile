@@ -1,25 +1,26 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-RUN id -u app &>/dev/null || useradd -m app && mkdir -p /app && chown app:app /app
-USER app
+# Use the official ASP.NET runtime as a base image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
+# Create a non-root user (optional)
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+USER appuser
+
+# Use the SDK image for building the app
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["LocalBrand/LocalBrand.csproj", "LocalBrand/"]
-RUN dotnet restore "./LocalBrand/LocalBrand.csproj"
+COPY ["LocalBrand/LocalBrand.csproj", "./"]
+RUN dotnet restore "LocalBrand.csproj"
 COPY . .
-WORKDIR "/src/LocalBrand"
-RUN dotnet build "./LocalBrand.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/."
+RUN dotnet build "LocalBrand.csproj" -c Release -o /app/build
 
+# Publish the app
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./LocalBrand.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "LocalBrand.csproj" -c Release -o /app/publish
 
+# Final stage: Build a runtime image
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
