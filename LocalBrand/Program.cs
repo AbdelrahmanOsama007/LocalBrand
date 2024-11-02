@@ -41,6 +41,7 @@ namespace LocalBrand
             builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<MyAppContext>()
                 .AddDefaultTokenProviders();
+
             // Configure JWT Authentication
             var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
             builder.Services.AddAuthentication(x =>
@@ -60,11 +61,7 @@ namespace LocalBrand
                     ValidateAudience = false,
                     RoleClaimType = ClaimTypes.Role // Add this line
                 };
-
             });
-            //////////end////////////
-
-
 
             var app = builder.Build();
 
@@ -78,36 +75,47 @@ namespace LocalBrand
             app.UseHttpsRedirection();
             app.UseCors("AllowAllDomains");
 
+            app.UseAuthentication(); // Ensure authentication middleware is added
             app.UseAuthorization();
-
 
             app.MapControllers();
 
-            app.Run();
-            static async Task SeedAdminUser(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+            // Optional: Seed Admin User
+            using (var scope = app.Services.CreateScope())
             {
-                var adminUsername = "admin"; // static username
-                var adminPassword = "Admin@123"; // static password
+                var services = scope.ServiceProvider;
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                SeedAdminUser(userManager, roleManager).Wait();
+            }
+            app.Urls.Add("http://0.0.0.0:80");
 
-                if (!await roleManager.RoleExistsAsync("Admin"))
+            app.Run();
+        }
+
+        static async Task SeedAdminUser(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            var adminUsername = "admin"; // static username
+            var adminPassword = "Admin@123"; // static password
+
+            if (!await roleManager.RoleExistsAsync("Admin"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+
+            var adminUser = await userManager.FindByNameAsync(adminUsername);
+            if (adminUser == null)
+            {
+                adminUser = new AppUser
                 {
-                    await roleManager.CreateAsync(new IdentityRole("Admin"));
-                }
+                    UserName = adminUsername,
+                    Email = "admin@example.com",
+                };
 
-                var adminUser = await userManager.FindByNameAsync(adminUsername);
-                if (adminUser == null)
+                var result = await userManager.CreateAsync(adminUser, adminPassword);
+                if (result.Succeeded)
                 {
-                    adminUser = new AppUser
-                    {
-                        UserName = adminUsername,
-                        Email = "admin@example.com",
-                    };
-
-                    var result = await userManager.CreateAsync(adminUser, adminPassword);
-                    if (result.Succeeded)
-                    {
-                        await userManager.AddToRoleAsync(adminUser, "Admin");
-                    }
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
             }
         }
