@@ -1,5 +1,5 @@
 # Use the official ASP.NET runtime as a base image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 
@@ -7,13 +7,27 @@ EXPOSE 80
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 USER appuser
 
+
 # Use the SDK image for building the app
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["LocalBrand/LocalBrand.csproj", "./"]
-RUN dotnet restore "LocalBrand.csproj"
+
+# Copy project files
+COPY ["LocalBrand/LocalBrand.csproj", "LocalBrand/"]
+COPY ["Business/Business.csproj", "Business/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["Model/Model.csproj", "Model/"]
+
+# Restore dependencies with detailed verbosity
+RUN dotnet restore "LocalBrand/LocalBrand.csproj" --verbosity detailed
+
+# Copy the rest of the files into the container
 COPY . .
-WORKDIR "/src/."
+
+# Set the correct working directory for the build command
+WORKDIR "/src/LocalBrand"
+
+# Build the application
 RUN dotnet build "LocalBrand.csproj" -c Release -o /app/build
 
 # Publish the app
@@ -24,4 +38,5 @@ RUN dotnet publish "LocalBrand.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN dotnet dev-certs https --trust
 ENTRYPOINT ["dotnet", "LocalBrand.dll"]

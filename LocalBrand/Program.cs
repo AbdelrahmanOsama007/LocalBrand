@@ -31,59 +31,87 @@ namespace LocalBrand
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Configure CORS to allow all domains
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAllDomains", p =>
+                options.AddPolicy("AllowAllDomains", builder =>
                 {
-                    p.AllowAnyOrigin();
-                    p.AllowAnyHeader();
-                    p.AllowAnyMethod();
+                    builder.AllowAnyOrigin()
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
                 });
             });
 
+            // Add services to the container
             builder.Services.AddControllers();
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            // Configure Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "LocalBrand API", Version = "v1" });
             });
 
+            // Add logging
             builder.Logging.AddConsole();
             builder.Logging.AddDebug();
 
-            // Register services and repositories
-            builder.Services.AddScoped<IProductService, ProductService>();
-            builder.Services.AddScoped<IOrderService, OrderService>();
-            builder.Services.AddScoped<ICategoryService, CategoryService>();
-            builder.Services.AddScoped<IGenericRepository<Product>, GenericRepository<Product>>();
-            builder.Services.AddScoped<IGenericRepository<ProductImage>, GenericRepository<ProductImage>>();
-            builder.Services.AddScoped<IGenericRepository<Stock>, GenericRepository<Stock>>();
-            builder.Services.AddScoped<IGenericRepository<ProductColorImage>, GenericRepository<ProductColorImage>>();
-            builder.Services.AddScoped<IGenericRepository<Order>, GenericRepository<Order>>();
-            builder.Services.AddScoped<IGenericRepository<OrderDetails>, GenericRepository<OrderDetails>>();
-            builder.Services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
-            builder.Services.AddScoped<IGenericRepository<SubCategory>, GenericRepository<SubCategory>>();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped<ICategoryRepository,  CategoryRepository>();
-            builder.Services.AddScoped<IWishlistService, WishlistService>();
-            builder.Services.AddScoped<ICartService, CartService>();
+            // Register application services and repositories
+            RegisterServices(builder.Services);
 
-            // Add DbContext with SQL Server support
+            // Configure the DbContext with SQL Server
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MyAppContext>(options =>
                 options.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
-            // Identity services
-            builder.Services.AddIdentity<AppUser, IdentityRole>()
-                .AddEntityFrameworkStores<MyAppContext>()
-                .AddDefaultTokenProviders();
+            // Configure Identity services
+            ConfigureIdentity(builder.Services);
 
             // Configure JWT Authentication
-            var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-            builder.Services.AddAuthentication(options =>
+            ConfigureJwtAuthentication(builder.Services, builder.Configuration);
+
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline
+            ConfigureHttpRequestPipeline(app);
+
+            // Run the application
+            app.Run();
+        }
+
+        private static void RegisterServices(IServiceCollection services)
+        {
+            // Application services
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IWishlistService, WishlistService>();
+            services.AddScoped<ICartService, CartService>();
+
+            // Repositories
+            services.AddScoped<IGenericRepository<Product>, GenericRepository<Product>>();
+            services.AddScoped<IGenericRepository<ProductImage>, GenericRepository<ProductImage>>();
+            services.AddScoped<IGenericRepository<Stock>, GenericRepository<Stock>>();
+            services.AddScoped<IGenericRepository<ProductColorImage>, GenericRepository<ProductColorImage>>();
+            services.AddScoped<IGenericRepository<Order>, GenericRepository<Order>>();
+            services.AddScoped<IGenericRepository<OrderDetails>, GenericRepository<OrderDetails>>();
+            services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
+            services.AddScoped<IGenericRepository<SubCategory>, GenericRepository<SubCategory>>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+        }
+
+        private static void ConfigureIdentity(IServiceCollection services)
+        {
+            services.AddIdentity<AppUser, IdentityRole>()
+                .AddEntityFrameworkStores<MyAppContext>()
+                .AddDefaultTokenProviders();
+        }
+
+        private static void ConfigureJwtAuthentication(IServiceCollection services, IConfiguration configuration)
+        {
+            var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
+            services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -101,10 +129,11 @@ namespace LocalBrand
                     RoleClaimType = ClaimTypes.Role // Ensure this line is present
                 };
             });
+        }
 
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
+        private static void ConfigureHttpRequestPipeline(WebApplication app)
+        {
+            // Enable exception handling and configure Swagger in Development mode
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -132,14 +161,11 @@ namespace LocalBrand
                 });
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection(); // Uncomment if using HTTPS
             app.UseCors("AllowAllDomains");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
-
-            // Run the application
-            app.Run();
         }
     }
 }
