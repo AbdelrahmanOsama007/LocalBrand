@@ -116,12 +116,12 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("DeleteProduct")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProduct([FromBody]int id)
         {
             try
             {
                 var result = await _productService.DeleteProductAsync(id);
-                if (!string.IsNullOrEmpty(result.DevelopMessage))
+                if (!string.IsNullOrEmpty(result.DevelopMessage))   
                 {
                     _logger.LogError(result.DevelopMessage);
                 }
