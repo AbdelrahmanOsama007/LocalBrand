@@ -15,7 +15,7 @@ namespace Business.Products.Dtos
         [Required]
         [MinLength(5)]
         [MaxLength(150)]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Product Name can only contain letters.")]
+        [RegularExpression(@"^[a-zA-Z\s\-]+$", ErrorMessage = "Product Name can only contain letters, spaces, and hyphens.")]
         public string Name { get; set; }
         [Required]
         [MinLength(20)]
