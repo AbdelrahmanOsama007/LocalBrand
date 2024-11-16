@@ -54,6 +54,7 @@ namespace LocalBrand.Controllers
                        return Ok(new OperationResult { Success = true, Data = true, Message = "Ordered Successfully" }) ;
                     }
                 }
+                await _orderrepository.DeleteAsync(int.Parse(merchantOrderId));
                 return Ok(new OperationResult { Success = false, Data = false, Message = "Transaction Failed" });
             }
             catch (Exception ex)
