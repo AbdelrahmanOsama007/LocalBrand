@@ -63,7 +63,7 @@ namespace Business.Orders.Validator
                 };
                 decimal subtotal = 0;
                 decimal total = 0;
-
+                
                 foreach (var item in order.Products)
                 {
 
@@ -92,8 +92,8 @@ namespace Business.Orders.Validator
                     neworder.OrderDetails.Add(orderitem);
 
                     var result = product.Stock.FirstOrDefault(s => s.SizeId == item.SizeId && s.ColorId == item.ColorId);
-                    if (result != null)
-                        {
+                    if (result != null && order.PaymentMethod == PaymentMethodEnum.PayOnDelivery)
+                    {
                             result.Quantity = result.Quantity - item.Quantity;
                             await _productrepository.SaveChangesAsync();
                     }

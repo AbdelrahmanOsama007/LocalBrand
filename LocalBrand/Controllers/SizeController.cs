@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LocalBrand.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class SizeController : Controller
     {
         private readonly ILogger<SizeController> _logger;
