@@ -29,5 +29,17 @@ namespace Infrastructure.Repository
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
+        public async Task<OperationResult> GetCategoryName(int catId)
+        {
+            try
+            {
+                var result = await _context.Categories.FirstOrDefaultAsync(c => c.Id == catId);
+                return new OperationResult() { Success = true, Message = "Data retrieved successfully", Data = result };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
+            }
+        }
     }
 }

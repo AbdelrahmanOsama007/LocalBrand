@@ -12,8 +12,7 @@ namespace Business.Orders.Dtos
 {
     public class OrderDto
     {
-        [Required]
-        public DateTime OrderDate { get; set; }
+        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         [Required]
         [MinLength(3)]
         [MaxLength(20)]

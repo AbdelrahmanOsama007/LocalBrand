@@ -10,5 +10,6 @@ namespace Business.Cart.Interfaces
     public interface ICartService
     {
         Task<OperationResult> CheckStockQuantity(CartInfo productinfo);
+        Task<OperationResult> GetCartProducts(CartInfo[] productsinfo);
     }
 }

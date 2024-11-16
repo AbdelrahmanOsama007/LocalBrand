@@ -91,6 +91,41 @@ namespace Business.Categories.Validator
             }
         }
 
+        public async Task<OperationResult> GetCategoryDetails(int catId)
+        {
+            try
+            {
+                var result = await _category.GetCategoryName(catId);
+                if (!result.Success)
+                {
+                    return result;
+                }
+
+                var Categoryobject = (Category)result.Data;
+                var CategoryDto = new CategoryDto()
+                {
+                    CategoryId = Categoryobject.Id,
+                    CategoryName = Categoryobject.Name,
+                    SubCategories = new List<SubCategoryDto>()
+                };
+                foreach (var subcategory in Categoryobject.SubCategories)
+                {
+                    var subcategorydto = new SubCategoryDto()
+                    {
+                        SubCategoryId = subcategory.Id,
+                        CategoryId = Categoryobject.Id,
+                        SubCategoryName = subcategory.Name,
+                    };
+                    CategoryDto.SubCategories.Add(subcategorydto);
+                }
+                return new OperationResult() { Success = true, Message = result.Message, Data = CategoryDto };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
+            }
+        }
+
         public async Task<OperationResult> GetSubCatsByCatId(int catId)
         {
             try

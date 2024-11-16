@@ -1,5 +1,6 @@
 ﻿using Business.Cart.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Model.Models;
 
 namespace LocalBrand.Controllers
@@ -35,6 +36,28 @@ namespace LocalBrand.Controllers
             {
                 _logger.LogError(ex.Message);
                 return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
+            }
+        }
+        [HttpPost("GetCartProducts")]
+        public async Task<IActionResult> GetCartProducts(CartInfo[] productsinfo)
+        {
+            try
+            {
+                var result = await _cartService.GetCartProducts(productsinfo);
+                if (string.IsNullOrEmpty(result.DevelopMessage))
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    _logger.LogError(result.DevelopMessage);
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, new { Message = "Something Went Wrong. Please try again later."});
             }
         }
     }

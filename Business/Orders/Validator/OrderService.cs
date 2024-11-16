@@ -1,14 +1,17 @@
-﻿using Business.Orders.Dtos;
+﻿using Business.Email.Validator;
+using Business.Orders.Dtos;
 using Business.Orders.Interfaces;
 using Business.Products.Dtos;
 using Infrastructure.Context;
 using Infrastructure.IGenericRepository;
+using Infrastructure.IRepository;
 using Microsoft.EntityFrameworkCore;
 using Model.Enums;
 using Model.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,19 +22,36 @@ namespace Business.Orders.Validator
         private readonly IGenericRepository<Order> _orderrepository;
         private readonly IGenericRepository<OrderDetails> _orderdetailsrepository;
         private readonly IGenericRepository<Product> _productrepository;
+        private readonly IProductRepository _ProductRepository;
+        private readonly EmailService _emailService;
         private readonly MyAppContext _context;
-        public OrderService(IGenericRepository<Order> orderrepository, MyAppContext context, IGenericRepository<OrderDetails> orderdetailsrepository, IGenericRepository<Product> productrepository)
+        public OrderService(IGenericRepository<Order> orderrepository, MyAppContext context, IGenericRepository<OrderDetails> orderdetailsrepository, IGenericRepository<Product> productrepository , IProductRepository ProductRepository, EmailService emailService)
         {
             _orderrepository = orderrepository;
             _context = context;
             _orderdetailsrepository = orderdetailsrepository;
             _productrepository = productrepository;
+            _ProductRepository = ProductRepository;
+            _emailService = emailService;
         }
         public async Task<OperationResult> AddOrderAsync(OrderDto order)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
+                foreach (var product in order.Products)
+                {
+                    var productinfo = new CartInfo() { ProductId = product.ProductId, ColorId = product.ColorId, SizeId = product.SizeId, Quantity = product.Quantity };
+                    var result = await _ProductRepository.CheckStockQuantity(productinfo);
+                    if (result.Success)
+                    {
+                        var stockproduct = (Stock)result.Data;
+                        if (stockproduct.Quantity < productinfo.Quantity)
+                        {
+                            return new OperationResult() { Success = true, Data = false, Message = $"Quantity of {stockproduct.Product.Name} Product is not available"};
+                        }
+                    }
+                }
                 Order neworder = new Order()
                 {
                     OrderNumber = await GenerateUniqueOrderNumber(),
@@ -61,12 +81,14 @@ namespace Business.Orders.Validator
                     var orderitem = new OrderDetails()
                     {
                         ProductId = item.ProductId,
-                        SubTotalPrice = product.Price,
-                        TotalPrice = product.Price - (product.Price * (product.Discount / 100)),
+                        PriceAfterDiscount = product.Price - (product.Price * (product.Discount / 100)),
+                        PriceBeforeDiscount = product.Price,
                         SizeId = item.SizeId,
                         ColorId = item.ColorId,
                         Quantity = item.Quantity,
                     };
+                    orderitem.TotalPrice = orderitem.PriceAfterDiscount * orderitem.Quantity;
+                    orderitem.SubTotalPrice = orderitem.PriceBeforeDiscount * orderitem.Quantity;
                     neworder.OrderDetails.Add(orderitem);
 
                     var result = product.Stock.FirstOrDefault(s => s.SizeId == item.SizeId && s.ColorId == item.ColorId);
@@ -80,8 +102,22 @@ namespace Business.Orders.Validator
                 neworder.SubTotalPrice = subtotal;
                 neworder.TotalPrice = total;
                 await _orderrepository.AddAsync(neworder);
+                await _orderrepository.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return new OperationResult() { Success = true, Message = "Ordered Successfully" };
+                if(order.PaymentMethod == PaymentMethodEnum.PayOnDelivery)
+                {
+                    var SentEmail = _emailService.SendEmail(new EmailModel()
+                    {
+                        FromName = "Eleve Store",
+                        ToName = $"{order.FirstName} {order.LastName}",
+                        ToEmail = order.Email,
+                        Subject = "Order Confirmation",
+                        Body = "A7a"
+                    });
+                    return new OperationResult() { Success = true, Data = true, Message = "Ordered Successfully" };
+                }
+                var orderinfoobject = new OrderInfo { Id = neworder.Id, TotalPrice = neworder.TotalPrice, Hash = Kashier.create_hash(neworder.Id, neworder.TotalPrice) };
+                return new OperationResult() { Success = true, Data = true, OrderAdditionalData = orderinfoobject, Message = "Ordered Successfully" };
             }
             catch (Exception ex)
             {
@@ -155,8 +191,6 @@ namespace Business.Orders.Validator
                             var orderdetaildto = new UserProductDto()
                             {
                                 ProductId = orderdetail.ProductId,
-                                Total = orderdetail.TotalPrice,
-                                SubTotal = orderdetail.SubTotalPrice,
                                 SizeId = orderdetail.SizeId,
                                 ColorId = orderdetail.ColorId,
                                 Quantity = orderdetail.Quantity,
@@ -217,7 +251,6 @@ namespace Business.Orders.Validator
 
                     var orderdetailsobject = new OrderDetails()
                         {
-                            SubTotalPrice = product.Price,
                             TotalPrice = product.Price - (product.Price * (product.Discount / 100)),
                             SizeId = orderdetail.SizeId,
                             ColorId = orderdetail.ColorId,
@@ -277,6 +310,36 @@ namespace Business.Orders.Validator
             } while (isUnique != null);
 
             return orderNumber;
+        }
+
+    }
+    public class Kashier
+    {
+        public static string create_hash(int orderId, decimal amount)
+        {
+            string mid = "MID-29963-501";
+            string currency = "EGP";
+            string secret = "47275ccc02b9e605b3fb27d48bb9d48a$ccb3605e66afe6f6160f77ba05bc8b09bffae728e54f6677e17eed231e81578cce033aa36e52e6e46ac1d2860a9bbbe3";
+            string path = "/?payment=" + mid + "." + orderId + "." + amount + "." + currency;
+            string message;
+            string key;
+            key = secret;
+            message = path;
+            System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+            byte[] keyByte = encoding.GetBytes(key);
+            byte[] messageBytes = encoding.GetBytes(message);
+            HMACSHA256 hmacmd256 = new HMACSHA256(keyByte);
+            byte[] hashmessage = hmacmd256.ComputeHash(messageBytes);
+            return ByteToString(hashmessage).ToLower();
+        }
+        public static string ByteToString(byte[] buff)
+        {
+            string sbinary = "";
+            for (int i = 0; i < buff.Length; i++)
+            {
+                sbinary += buff[i].ToString("X2");
+            }
+            return (sbinary);
         }
     }
 }

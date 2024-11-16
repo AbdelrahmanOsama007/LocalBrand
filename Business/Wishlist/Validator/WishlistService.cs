@@ -36,7 +36,8 @@ namespace Business.Wishlist.Validator
                     {
                         ProductId = product.Id,
                         ProductName = product.Name,
-                        Image = product.ProductImages.ToList()[0].Name
+                        Image = product.ProductImages.ToList()[0].Name,
+                        Price = product.Price,
                     };
                     wishlistproducts.Add(productdto);
                 }

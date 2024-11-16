@@ -9,8 +9,6 @@ namespace Model.Enums
     public enum PaymentMethodEnum
     {
         PayOnDelivery,
-        VISA,
-        MasterCard,
-        VodafoneCash
+        OnlinePayment
     }
 }

@@ -89,12 +89,10 @@ namespace Business.Products.Validator
             }
 
         }
-
         public async Task<OperationResult> DeleteProductAsync(int id)
         {
             return await _productrepository.DeleteAsync(id);
         }
-
         public async Task<OperationResult> GetAllProductsAsync()
         {
             try
@@ -137,7 +135,6 @@ namespace Business.Products.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-
         public async Task<OperationResult> GetBestSellers()
         {
             try
@@ -178,7 +175,6 @@ namespace Business.Products.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-
         public async Task<OperationResult> GetProductByIdAsync(int id)
         {
             var result = await _productrepository.GetByIdAsync(id);
@@ -189,7 +185,14 @@ namespace Business.Products.Validator
 
                 foreach (var stock in productobject.Stock)
                 {
-                    ProductInfo.Add(new ProductInfoDto() {SizeId = stock.SizeId, ColorId = stock.ColorId, SizeName = stock.Size.SizeKey});
+                    if(stock.Quantity > 0)
+                    {
+                        ProductInfo.Add(new ProductInfoDto() { SizeId = stock.SizeId, ColorId = stock.ColorId, SizeName = stock.Size.SizeKey });
+                    }
+                    else
+                    {
+                        ProductInfo.Add(new ProductInfoDto() {ColorId = stock.ColorId,});
+                    }
                 }
 
                 var ColorImagesList = new List<ColorImagesDto>();
@@ -226,7 +229,9 @@ namespace Business.Products.Validator
                     Discount = productobject.Discount,
                     PriceBeforeDiscount = productobject.Price,
                     PriceAfterDiscount = ActualPrice,
-                    SubCategoryId= productobject.SubCategoryId,
+                    SubCategoryId = productobject.SubCategoryId,
+                    CategoryId = productobject.SubCategory.Category.Id,
+                    CategoryName = productobject.SubCategory.Category.Name,
                     SizesAndColorsQuantity = ProductInfo,
                     ColorImages = ColorImagesList,
                     IsOutOfStock= IsOutOfStock,
@@ -238,7 +243,6 @@ namespace Business.Products.Validator
                 return result;
             }
         }
-
         public async Task<OperationResult> GetProductsByCategoryAsync(int categoryId)
         {
             try
@@ -279,7 +283,6 @@ namespace Business.Products.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-
         public async Task<OperationResult> GetProductsBySubCategoryAsync(int id)
         {
             try
@@ -320,7 +323,6 @@ namespace Business.Products.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-
         public async Task<OperationResult> UpdateProductAsync(int id, AdminProductDto updatedProduct)
         {
             using var transaction = await _productrepository.BeginTransactionAsync();

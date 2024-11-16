@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Antiforgery;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,7 @@ namespace Model.Models
         public string Message { get; set; }
         public string DevelopMessage { get; set; }
         public object Data { get; set; }
+        public int AdditionalData { get; set; }
+        public OrderInfo OrderAdditionalData { get; set; }
     }
 }

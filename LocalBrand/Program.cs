@@ -2,6 +2,7 @@ using Business.Cart.Interfaces;
 using Business.Cart.Validator;
 using Business.Categories.Interfaces;
 using Business.Categories.Validator;
+using Business.Email.Validator;
 using Business.Orders.Interfaces;
 using Business.Orders.Validator;
 using Business.Products.Interfaces;
@@ -70,6 +71,9 @@ namespace LocalBrand
             builder.Services.AddScoped<ICategoryRepository,  CategoryRepository>();
             builder.Services.AddScoped<IWishlistService, WishlistService>();
             builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IGenericRepository<Color>, GenericRepository<Color>>();
+            builder.Services.AddScoped<IGenericRepository<Size>, GenericRepository<Size>>();
+            builder.Services.AddScoped<EmailService>();
 
             // Add DbContext with SQL Server support
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

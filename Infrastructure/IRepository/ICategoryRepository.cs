@@ -10,5 +10,6 @@ namespace Infrastructure.IRepository
     public interface ICategoryRepository
     {
         Task<OperationResult> GetSubCatByCatId(int catId);
+        Task<OperationResult> GetCategoryName(int catId);
     }
 }

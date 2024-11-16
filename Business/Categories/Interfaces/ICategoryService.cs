@@ -15,5 +15,6 @@ namespace Business.Categories.Interfaces
         Task<OperationResult> UpdateCategoryAsync(int id, NewCategoryDto updatedcategory);
         Task<OperationResult> GetAllCategoriesAsync();
         Task<OperationResult> GetSubCatsByCatId(int catId);
+        Task<OperationResult> GetCategoryDetails(int catId);
     }
 }

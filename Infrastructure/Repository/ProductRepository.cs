@@ -41,7 +41,6 @@ namespace Infrastructure.Repository
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-
         public async Task<OperationResult> GetProductsByCategoryId(int categoryid)
         {
             try
@@ -54,7 +53,6 @@ namespace Infrastructure.Repository
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-
         public async Task<OperationResult> GetWishlistProducts(int[] Ids)
         {
             var productslist = new List<Product>();

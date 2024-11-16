@@ -131,5 +131,27 @@ namespace LocalBrand.Controllers
                 return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
             }
         }
+        [HttpPost("GetCategoryName")]
+        public async Task<IActionResult> GetCategoryDetails([FromBody] int id)
+        {
+            try
+            {
+                var result = await _categoryService.GetCategoryDetails(id);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    _logger.LogError(result.DevelopMessage);
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
+            }
+        }
     }
 }

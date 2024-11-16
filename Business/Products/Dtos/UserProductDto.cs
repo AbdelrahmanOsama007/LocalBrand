@@ -19,12 +19,6 @@ namespace Business.Products.Dtos
         [Range(1, int.MaxValue, ErrorMessage = "ColorId must be a positive number.")]
         public int ColorId { get; set; }
         [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "SubTotal must be a positive number.")]
-        public decimal SubTotal { get; set; }
-        [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Total must be a positive number.")]
-        public decimal Total { get; set; }
-        [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be a positive number.")]
         public int Quantity { get; set; }
     }

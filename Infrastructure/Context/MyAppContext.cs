@@ -61,11 +61,21 @@ namespace Infrastructure.Context
                 .OnDelete(DeleteBehavior.Restrict);
 
             List<Category> categories = new List<Category>() { new Category() { Id = 1, Name = "Men" },
-                                                             {new Category(){ Id = 2 , Name = "Women"}}};
+                                                             {new Category(){ Id = 2 , Name = "Women"}},
+                                                             {new Category(){Id = 3, Name = "Unisex" }},
+                                                             {new Category(){Id = 4, Name = "Accessories" }}};
 
-            List<SubCategory> subcategories = new List<SubCategory>() { new SubCategory() { Id =1, Name= "T-Shirt", CategoryId = 1},
+            List<SubCategory> Menssubcategories = new List<SubCategory>() { new SubCategory() { Id =1, Name= "T-Shirt", CategoryId = 1},
                                                                new SubCategory() { Id =2, Name= "Hoddie", CategoryId = 1},
                                                                new SubCategory() { Id =3, Name= "Short", CategoryId = 1}};
+
+            List<SubCategory> Womenssubcategories = new List<SubCategory>() { new SubCategory() { Id =4, Name= "T-Shirt", CategoryId = 2},
+                                                               new SubCategory() { Id =5, Name= "Hoddie", CategoryId = 2},
+                                                               new SubCategory() { Id =6, Name= "Top", CategoryId = 2}};
+
+            List<SubCategory> Unisexsubcategories = new List<SubCategory>() { new SubCategory() { Id = 7, Name = "Hoddie", CategoryId = 3 }};
+
+            List<SubCategory> accessoriessubcategories = new List<SubCategory>() { new SubCategory() { Id = 8, Name = "Perfume", CategoryId = 4 }};
 
             List<Color> colors = new List<Color>() { new Color() { Id = 1, ColorName = ColorEnum.black.ToString(), ColorCode = "#000"},
                                                      new Color() { Id = 2, ColorName = ColorEnum.white.ToString(), ColorCode = "#fff"},
@@ -81,13 +91,23 @@ namespace Infrastructure.Context
                                                   new Size() {Id = 7, SizeName = SizeEnum.Size34.ToString(), SizeKey = "34"},
                                                   new Size() {Id = 8, SizeName = SizeEnum.Size36.ToString(), SizeKey = "36"},
                                                   new Size() {Id = 9, SizeName = SizeEnum.Size38.ToString(), SizeKey = "38"},
-                                                  new Size() {Id = 10, SizeName = SizeEnum.Size40.ToString(), SizeKey = "40"}};
+                                                  new Size() {Id = 10, SizeName = SizeEnum.Size40.ToString(), SizeKey = "40"},
+                                                  new Size() {Id = 11, SizeName = SizeEnum.S100ML.ToString(), SizeKey = "100 ML"}};
 
             modelBuilder.Entity<Category>()
             .HasData(categories);
 
             modelBuilder.Entity<SubCategory>()
-                .HasData(subcategories);
+                .HasData(Menssubcategories);
+
+            modelBuilder.Entity<SubCategory>()
+            .HasData(Womenssubcategories);
+
+            modelBuilder.Entity<SubCategory>()
+            .HasData(Unisexsubcategories);
+
+            modelBuilder.Entity<SubCategory>()
+            .HasData(accessoriessubcategories);
 
             modelBuilder.Entity<Color>()
                 .HasData(colors);

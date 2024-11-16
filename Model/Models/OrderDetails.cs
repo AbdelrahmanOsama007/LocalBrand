@@ -12,6 +12,8 @@ namespace Model.Models
     public class OrderDetails: ISoftDelete
     {
         public int Id { get; set; }
+        public decimal PriceBeforeDiscount { get; set; }
+        public decimal PriceAfterDiscount { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal SubTotalPrice { get; set; }
         public int SizeId { get; set; }
