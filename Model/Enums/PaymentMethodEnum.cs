@@ -8,7 +8,7 @@ namespace Model.Enums
 {
     public enum PaymentMethodEnum
     {
-        PayOnDelivery,
-        OnlinePayment
+        PayOnDelivery = 0,
+        OnlinePayment = 1
     }
 }

@@ -75,13 +75,13 @@ namespace Business.Orders.Validator
                     }
 
                     product = (Product)getproduct.Data;
-                    subtotal += product.Price;
-                    total += product.Price - (product.Price * (product.Discount / 100));
+                    subtotal += product.Price * item.Quantity;
+                    total += (product.Price - (product.Price * ((decimal)product.Discount / 100))) * item.Quantity;
 
                     var orderitem = new OrderDetails()
                     {
                         ProductId = item.ProductId,
-                        PriceAfterDiscount = product.Price - (product.Price * (product.Discount / 100)),
+                        PriceAfterDiscount = product.Price - (product.Price * ((decimal)product.Discount / 100)),
                         PriceBeforeDiscount = product.Price,
                         SizeId = item.SizeId,
                         ColorId = item.ColorId,
@@ -319,7 +319,7 @@ namespace Business.Orders.Validator
         {
             string mid = "MID-29963-501";
             string currency = "EGP";
-            string secret = "47275ccc02b9e605b3fb27d48bb9d48a$ccb3605e66afe6f6160f77ba05bc8b09bffae728e54f6677e17eed231e81578cce033aa36e52e6e46ac1d2860a9bbbe3";
+            string secret = "224067ad-549d-41e0-a1b0-093ee0b996a0";
             string path = "/?payment=" + mid + "." + orderId + "." + amount + "." + currency;
             string message;
             string key;
