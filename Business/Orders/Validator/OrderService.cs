@@ -184,6 +184,7 @@ namespace Business.Orders.Validator
                             Email = order.UserAddress.Email,
                             SubTotal = order.SubTotalPrice,
                             Total = order.TotalPrice,
+                            OrderStatus = order.OrderStatus,
                             Products = new List<UserProductDto>()
                         };
                         foreach (var orderdetail in order.OrderDetails)
@@ -320,7 +321,10 @@ namespace Business.Orders.Validator
             string mid = "MID-29963-501";
             string currency = "EGP";
             string secret = "224067ad-549d-41e0-a1b0-093ee0b996a0";
-            string path = "/?payment=" + mid + "." + orderId + "." + amount + "." + currency;
+            string ORDERID = $"{orderId}";
+            string AMOUNT = $"{(int)amount}";
+            string path = "/?payment=" + mid + "." + ORDERID + "." + AMOUNT + "." + currency;
+            Console.WriteLine(path);
             string message;
             string key;
             key = secret;

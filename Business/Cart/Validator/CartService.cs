@@ -29,6 +29,31 @@ namespace Business.Cart.Validator
             _sizerepository = sizerepository;
         }
 
+        public async Task<OperationResult> CheckCurrentStockQuantity(CartInfo productinfo)
+        {
+            try
+            {
+                var result = await _productRepository.CheckStockQuantity(productinfo);
+                if (result.Success)
+                {
+                    var product = (Stock)result.Data;
+                    if (product.Quantity >= productinfo.Quantity)
+                    {
+                        return new OperationResult() { Success = true, Message = "Quantity is available", Data = true };
+                    }
+                    else
+                    {
+                        return new OperationResult() { Success = true, Message = "Quantity is not available", Data = false, AdditionalData = product.Quantity };
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
+            }
+        }
+
         public async Task<OperationResult> CheckStockQuantity(CartInfo productinfo)
         {
             try
@@ -84,7 +109,7 @@ namespace Business.Cart.Validator
                         {
                             productdto.PriceAfterDiscount = productdto.PriceBeforeDiscount;
                         }
-                        var result = await CheckStockQuantity(productinfo);
+                        var result = await CheckCurrentStockQuantity(productinfo);
                         if ((bool)result.Data == false)
                         {
                             productdto.Quantity = result.AdditionalData;

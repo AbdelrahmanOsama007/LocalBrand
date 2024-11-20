@@ -38,6 +38,29 @@ namespace LocalBrand.Controllers
                 return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
             }
         }
+        [HttpPost("CheckCurrentStockQuantity")]
+        public async Task<IActionResult> CheckCurrentStockQuantity(CartInfo productinfo)
+        {
+            try
+            {
+                var result = await _cartService.CheckCurrentStockQuantity(productinfo);
+                if (string.IsNullOrEmpty(result.DevelopMessage))
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    _logger.LogError(result.DevelopMessage);
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
+            }
+        }
+
         [HttpPost("GetCartProducts")]
         public async Task<IActionResult> GetCartProducts(CartInfo[] productsinfo)
         {

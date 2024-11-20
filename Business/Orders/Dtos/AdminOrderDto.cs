@@ -1,4 +1,5 @@
 ﻿using Business.Products.Dtos;
+using Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace Business.Orders.Dtos
     {
         public DateTime OrderDate { get; set; }
         public string OrderNumber { get; set; }
+        public OrderStatusEnum OrderStatus { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
