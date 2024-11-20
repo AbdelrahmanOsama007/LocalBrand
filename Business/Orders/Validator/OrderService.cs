@@ -184,7 +184,7 @@ namespace Business.Orders.Validator
                             Email = order.UserAddress.Email,
                             SubTotal = order.SubTotalPrice,
                             Total = order.TotalPrice,
-                            OrderStatus = order.OrderStatus,
+                            OrderStatus = order.OrderStatus.ToString(),
                             Products = new List<UserProductDto>()
                         };
                         foreach (var orderdetail in order.OrderDetails)
