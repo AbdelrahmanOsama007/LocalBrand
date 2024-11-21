@@ -93,35 +93,37 @@ namespace Business.Products.Validator
         {
             return await _productrepository.DeleteAsync(id);
         }
-        public async Task<OperationResult> GetAllProductsAsync()
+        public async Task<OperationResult> GetAllProductsAsync(string? searchQuery = null)
         {
             try
             {
-                var result = await _productrepository.GetAllAsync();
+                var result = await _productrepository.GetAllAsync(searchQuery);
                 if (result.Success)
                 {
                     var productlist = (List<Product>)result.Data;
                     var productdtolist = new List<ProductDto>();
-
-                    foreach (var product in productlist)
+                    if(productlist.Count > 0)
                     {
-                        var IsOutOfStock = true;
-                        IsOutOfStock = CheckStock(product);
-
-                        var ActualPrice = GetActualPrice(product.Price, product.Discount);
-
-                        var productdto = new ProductDto()
+                        foreach (var product in productlist)
                         {
-                            Id = product.Id,
-                            Name = product.Name,
-                            PriceBeforeDiscount = product.Price,
-                            PriceAfterDiscount = ActualPrice,
-                            Discount = product.Discount,
-                            SubCategoryId = product.SubCategoryId,
-                            Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name },
-                            IsOutOfStock = IsOutOfStock
-                        };
-                        productdtolist.Add(productdto);
+                            var IsOutOfStock = true;
+                            IsOutOfStock = CheckStock(product);
+
+                            var ActualPrice = GetActualPrice(product.Price, product.Discount);
+
+                            var productdto = new ProductDto()
+                            {
+                                Id = product.Id,
+                                Name = product.Name,
+                                PriceBeforeDiscount = product.Price,
+                                PriceAfterDiscount = ActualPrice,
+                                Discount = product.Discount,
+                                SubCategoryId = product.SubCategoryId,
+                                Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name },
+                                IsOutOfStock = IsOutOfStock
+                            };
+                            productdtolist.Add(productdto);
+                        }
                     }
                     return new OperationResult() { Success = true, Message = result.Message, Data = productdtolist };
                 }

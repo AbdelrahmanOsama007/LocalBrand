@@ -21,11 +21,11 @@ namespace LocalBrand.Controllers
             _logger = logger;
         }
         [HttpPost("GetAllProducts")]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts([FromBody] string? searchQuery = null)
         {
             try
             {
-                var result = await _productService.GetAllProductsAsync();
+                var result = await _productService.GetAllProductsAsync(searchQuery);
                 if (result.Success)
                 {
                     return Ok(result);

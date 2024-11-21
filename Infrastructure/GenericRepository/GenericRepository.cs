@@ -67,19 +67,36 @@ namespace Infrastructure.GenericRepository
 
         }
 
-        public async Task<OperationResult> GetAllAsync()
+        public async Task<OperationResult> GetAllAsync(string? searchQuery = null, string? searchProperty = "Name")
         {
             try
             {
-                var result = await _dbSet.ToListAsync();
-                return new OperationResult() { Success = true, Message = "Data retrieved successfully", Data = result};
+                IQueryable<TEntity> query = _dbSet;
+                if (!string.IsNullOrWhiteSpace(searchQuery))
+                {
+                    query = query.Where(e => EF.Functions.Like(
+                        EF.Property<string>(e, searchProperty), $"%{searchQuery}%"));
+                }
+                var result = await query.ToListAsync();
+                if(result.Count > 0)
+                {
+                    return new OperationResult { Success = true, Message = "Data retrieved successfully", Data = result };
+                }
+                else
+                {
+                    return new OperationResult { Success = true, Message = "NO Data Found!!", Data = result };
+                }
             }
             catch (Exception ex)
             {
-                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "Something Went Wrong. Please Try Again Later",
+                    DevelopMessage = ex.Message
+                };
             }
         }
-
         public async Task<OperationResult> GetByIdAsync(int id)
         {
             try

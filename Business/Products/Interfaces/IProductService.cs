@@ -12,7 +12,7 @@ namespace Business.Products.Interfaces
     {
         Task<OperationResult> AddProductAsync(AdminProductDto product);
         Task<OperationResult> DeleteProductAsync(int id);
-        Task<OperationResult> GetAllProductsAsync();
+        Task<OperationResult> GetAllProductsAsync(string? searchQuery = null);
         Task<OperationResult> GetProductByIdAsync(int id);
         Task<OperationResult> UpdateProductAsync(int id, AdminProductDto updatedProduct);
         Task<OperationResult> GetProductsBySubCategoryAsync(int id);

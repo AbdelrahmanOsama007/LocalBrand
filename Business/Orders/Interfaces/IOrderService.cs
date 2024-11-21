@@ -13,6 +13,7 @@ namespace Business.Orders.Interfaces
         Task<OperationResult> AddOrderAsync(OrderDto order);
         Task<OperationResult> DeleteOrderAsync(int id);
         Task<OperationResult> GetAllOrdersAsync();
-        Task<OperationResult> UpdateOrderAsync(int id, OrderDto updatedOrder);
+        Task<OperationResult> UpdateOrderAsync(AdminOrderDto updatedOrder);
+        Task<OperationResult> GetOrderById(int orderid);
     }
 }

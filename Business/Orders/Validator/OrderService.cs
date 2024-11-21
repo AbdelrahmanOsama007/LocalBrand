@@ -48,7 +48,7 @@ namespace Business.Orders.Validator
                         var stockproduct = (Stock)result.Data;
                         if (stockproduct.Quantity < productinfo.Quantity)
                         {
-                            return new OperationResult() { Success = true, Data = false, Message = $"Quantity of {stockproduct.Product.Name} Product is not available"};
+                            return new OperationResult() { Success = true, Data = false, QuantityLeek = true, Message = $"Sorry there is one or more product's quantity of your order are not available"};
                         }
                     }
                 }
@@ -172,6 +172,7 @@ namespace Business.Orders.Validator
                     {
                         var orderDto = new AdminOrderDto()
                         {
+                            OrderId = order.Id,
                             OrderDate = order.OrderDate,
                             OrderNumber = order.OrderNumber,
                             FirstName = order.UserAddress.FirstName,
@@ -209,12 +210,23 @@ namespace Business.Orders.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-        public async Task<OperationResult> UpdateOrderAsync(int id, OrderDto updatedOrder)
+
+        public async Task<OperationResult> GetOrderById(int orderid)
+        {
+            var result = await _orderrepository.GetByIdAsync(orderid);
+            if (!result.Success)
+            {
+                return new OperationResult() { Success = result.Success, Message = result.Message, OnlinePaymentStatus = false };
+            }
+            return new OperationResult() { Success = result.Success, Message = result.Message, OnlinePaymentStatus = true };
+        }
+
+        public async Task<OperationResult> UpdateOrderAsync(AdminOrderDto updatedOrder)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                var orderresult = await _orderrepository.GetByIdAsync(id);
+                var orderresult = await _orderrepository.GetByIdAsync(updatedOrder.OrderId);
                 if (!orderresult.Success)
                 {
                     return orderresult;
@@ -248,11 +260,11 @@ namespace Business.Orders.Validator
 
                     product = (Product)getproduct.Data;
                     subtotal += product.Price;
-                    total += product.Price - (product.Price * (product.Discount / 100));
+                    total += product.Price - (product.Price * ((decimal)product.Discount / 100));
 
                     var orderdetailsobject = new OrderDetails()
                         {
-                            TotalPrice = product.Price - (product.Price * (product.Discount / 100)),
+                            TotalPrice = product.Price - (product.Price * ((decimal)product.Discount / 100)),
                             SizeId = orderdetail.SizeId,
                             ColorId = orderdetail.ColorId,
                             Quantity = orderdetail.Quantity,

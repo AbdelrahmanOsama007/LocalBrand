@@ -47,13 +47,13 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("UpdateOrder")]
-        public async Task<IActionResult> UpdateOrder(int id, OrderDto order)
+        public async Task<IActionResult> UpdateOrder(AdminOrderDto updatedOrder)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _orderService.UpdateOrderAsync(id, order);
+                    var result = await _orderService.UpdateOrderAsync(updatedOrder);
                     if (result.Success)
                     {
                         return Ok(result);
@@ -99,6 +99,28 @@ namespace LocalBrand.Controllers
             try
             {
                 var result = await _orderService.GetAllOrdersAsync();
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    _logger.LogError(result.DevelopMessage);
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
+            }
+        }
+        [HttpPost("GetOrderById")]
+        public async Task<IActionResult> GetOrderById(int orderid)
+        {
+            try
+            {
+                var result = await _orderService.GetOrderById(orderid);
                 if (result.Success)
                 {
                     return Ok(result);

@@ -11,7 +11,7 @@ namespace Infrastructure.IGenericRepository
 {
     public interface IGenericRepository<TEntity> where TEntity : class
     {
-        Task<OperationResult> GetAllAsync();
+        Task<OperationResult> GetAllAsync(string? searchQuery = null, string? searchProperty = "Name");
         Task<OperationResult> GetByIdAsync(int id);
         Task<OperationResult> AddAsync(TEntity entity);
         Task<OperationResult> UpdateAsync(TEntity updatedEntity);

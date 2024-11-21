@@ -10,6 +10,7 @@ namespace Business.Orders.Dtos
 {
     public class AdminOrderDto
     {
+        public int OrderId { get; set; }
         public DateTime OrderDate { get; set; }
         public string OrderNumber { get; set; }
         public string OrderStatus { get; set; }

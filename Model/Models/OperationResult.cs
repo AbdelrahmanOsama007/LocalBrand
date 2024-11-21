@@ -14,6 +14,8 @@ namespace Model.Models
         public string DevelopMessage { get; set; }
         public object Data { get; set; }
         public int AdditionalData { get; set; }
+        public bool QuantityLeek { get; set; }
+        public bool OnlinePaymentStatus {  get; set; } 
         public OrderInfo OrderAdditionalData { get; set; }
     }
 }
