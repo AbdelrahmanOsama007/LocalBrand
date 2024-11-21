@@ -296,6 +296,8 @@ namespace Business.Orders.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
+       
+
         private async Task<string> GenerateUniqueOrderNumber()
         {
             string orderNumber;
@@ -313,6 +315,7 @@ namespace Business.Orders.Validator
             return orderNumber;
         }
 
+       
     }
     public class Kashier
     {

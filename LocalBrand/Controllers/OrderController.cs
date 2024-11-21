@@ -115,5 +115,9 @@ namespace LocalBrand.Controllers
                 return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
             }
         }
+        
+
+
     }
+
 }

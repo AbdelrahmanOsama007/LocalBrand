@@ -1,4 +1,6 @@
 ﻿using Business.Orders.Dtos;
+using Microsoft.AspNetCore.Mvc;
+using Model.Enums;
 using Model.Models;
 using System;
 using System.Collections.Generic;
@@ -14,5 +16,6 @@ namespace Business.Orders.Interfaces
         Task<OperationResult> DeleteOrderAsync(int id);
         Task<OperationResult> GetAllOrdersAsync();
         Task<OperationResult> UpdateOrderAsync(int id, OrderDto updatedOrder);
+        
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Business.Orders.Dtos
 {
     public class AdminOrderDto
-    {
+    { 
         public DateTime OrderDate { get; set; }
         public string OrderNumber { get; set; }
         public string OrderStatus { get; set; }
