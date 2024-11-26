@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Business.Email.Dtos;
 
 namespace Business.Email.Validator
 {
@@ -52,6 +53,39 @@ namespace Business.Email.Validator
                 {
                     return false;
                 }
+        }
+        public bool RecieveEmail(ContactDto model)
+        {
+            var smtpSettings = _configuration.GetSection("SmtpSettings");
+            string smtpHost = smtpSettings["Host"];
+            int smtpPort = int.Parse(smtpSettings["Port"]);
+            bool enableSsl = bool.Parse(smtpSettings["EnableSsl"]);
+            string username = smtpSettings["Username"];
+            string password = smtpSettings["Password"];
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(model.Name, model.Email));
+            message.To.Add(new MailboxAddress("Eleve Store", username));
+            message.Subject = "Client Message";
+            message.Body = new TextPart("plain")
+            {
+                Text = model.Message
+            };
+            var smtpClient = new SmtpClient();
+            smtpClient.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+            smtpClient.Connect(smtpHost, smtpPort, SecureSocketOptions.SslOnConnect);
+            smtpClient.Authenticate(username, password);
+            try
+            {
+                smtpClient.Send(message);
+                smtpClient.Disconnect(true);
+                smtpClient.Dispose();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
     }
 }

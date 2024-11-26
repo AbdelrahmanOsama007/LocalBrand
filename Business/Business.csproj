@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Email\Dtos\" />
     <Folder Include="Email\Interfaces\" />
     <Folder Include="SubCategories\Interfaces\" />
     <Folder Include="SubCategories\Validator\" />

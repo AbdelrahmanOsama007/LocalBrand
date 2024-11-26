@@ -27,6 +27,7 @@ using Microsoft.OpenApi.Models;
 using Model.Models;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
 
 namespace LocalBrand
 {
@@ -88,6 +89,27 @@ namespace LocalBrand
             builder.Services.AddDbContext<MyAppContext>(options =>
                 options.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
+            builder.Services.AddRateLimiter(options =>
+            {
+                // Define a named policy for the "Contact Us" endpoint
+                options.AddPolicy("ContactUsPolicy", context =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        factory: _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 5, // Allow 5 requests
+                            Window = TimeSpan.FromMinutes(1), // Within a 1-minute window
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = 2 // Allow 2 queued requests
+                        }));
+
+                options.OnRejected = async (context, token) =>
+                {
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    await context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", token);
+                };
+            });
+
             // Configure Identity services
             ConfigureIdentity(builder.Services);
 
@@ -131,7 +153,6 @@ namespace LocalBrand
                 .AddEntityFrameworkStores<MyAppContext>()
                 .AddDefaultTokenProviders();
         }
-
         private static void ConfigureJwtAuthentication(IServiceCollection services, IConfiguration configuration)
         {
             var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
