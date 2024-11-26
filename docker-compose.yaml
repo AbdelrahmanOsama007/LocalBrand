@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql-server
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Cr7_2019
+      - MSSQL_TCP_PORT=1433
+    ports:
+      - "1433:1433"  
+    volumes:
+      - sqlserver_data:/var/opt/mssql  
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Cr7_2019 -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  dotnet-app:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    image: dotnet-app
+    container_name: dotnet-app
+    command: bash -c "dotnet ef database update --project Infrastructure --startup-project LocalBrand"
+    ports:
+        - 5000:5000
+        - 5001:5001
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_ENVIRONMENT=Development 
+    volumes:
+      - dotnet_logs:/app/logs  
+    networks:
+      - mynetwork
+    depends_on:
+      - sql-server
+
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  sqlserver_data:
+    driver: local
+  dotnet_logs:
+    driver: local

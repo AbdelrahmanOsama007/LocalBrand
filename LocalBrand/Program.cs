@@ -118,11 +118,39 @@ namespace LocalBrand
 
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                var dbContext = scope.ServiceProvider.GetRequiredService<MyAppContext>();
+
+                try
+                {
+                    logger.LogInformation("Applying migrations...");
+                    dbContext.Database.Migrate();
+                    logger.LogInformation("Migrations applied successfully.");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred while applying migrations.");
+                    throw;
+                }
+            }
+
+
             // Configure the HTTP request pipeline
             ConfigureHttpRequestPipeline(app);
 
             // Run the application
+
+
+            
+
             app.Run();
+
+            
+            
+            
+            
         }
 
         private static void RegisterServices(IServiceCollection services)
