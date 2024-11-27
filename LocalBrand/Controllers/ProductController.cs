@@ -1,5 +1,8 @@
-﻿using Business.Products.Dtos;
+﻿using Business;
+using Business.Products.Dtos;
 using Business.Products.Interfaces;
+using System.Collections.Generic;
+using Infrastructure.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
@@ -15,10 +18,14 @@ namespace LocalBrand.Controllers
     {
         private readonly IProductService _productService;
         private readonly ILogger<ProductController> _logger;
-        public ProductController(IProductService productService, ILogger<ProductController> logger)
+        private readonly IFileCloudService _fileCloudService;
+        private readonly ImageService imageService;
+        public ProductController(IProductService productService, ILogger<ProductController> logger, IFileCloudService fileCloudService, ImageService imageService)
         {
             _productService = productService;
             _logger = logger;
+            _fileCloudService = fileCloudService;
+            this.imageService = imageService;
         }
         [HttpPost("GetAllProducts")]
         public async Task<IActionResult> GetAllProducts([FromBody] string? searchQuery = null)
@@ -69,6 +76,7 @@ namespace LocalBrand.Controllers
                 if(ModelState.IsValid)
                 {
                     var result = await _productService.AddProductAsync(product);
+                    // new file 
                     if (result.Success)
                     {
                         return Ok(result);
@@ -192,6 +200,12 @@ namespace LocalBrand.Controllers
                 _logger.LogError(ex.Message);
                 return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
             }
+        }
+        [HttpPost("uploadImage")]
+        public Task< List<string> >uploadImage( [FromBody] List <string> image)
+        {
+          List<string> imageUrl =   imageService.UploadBase64Images(image);
+          return Task.FromResult(imageUrl);
         }
     }
 }

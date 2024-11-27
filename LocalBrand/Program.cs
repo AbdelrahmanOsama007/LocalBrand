@@ -1,3 +1,4 @@
+using Business;
 using Business.Cart.Interfaces;
 using Business.Cart.Validator;
 using Business.Categories.Interfaces;
@@ -13,6 +14,7 @@ using Business.Sizes.Interfaces;
 using Business.Sizes.Validator;
 using Business.Wishlist.Interfaces;
 using Business.Wishlist.Validator;
+using CloudinaryDotNet;
 using Infrastructure.Context;
 using Infrastructure.GenericRepository;
 using Infrastructure.IGenericRepository;
@@ -83,7 +85,21 @@ namespace LocalBrand
             builder.Services.AddScoped<IGenericRepository<Color>, GenericRepository<Color>>();
             builder.Services.AddScoped<IGenericRepository<Size>, GenericRepository<Size>>();
             builder.Services.AddScoped<EmailService>();
+            builder.Services.AddScoped<ImageService, ImageService>();
 
+
+            #region FileServer
+
+            var cloudinaryCredentials = builder.Configuration.GetSection("_Cloudinary");
+            var account = new Account(
+                cloudinaryCredentials["CloudName"],
+                cloudinaryCredentials["ApiKey"],
+                cloudinaryCredentials["ApiSecret"]
+            );
+            builder.Services.AddScoped<IFileCloudService, FileCloudService>();
+            builder.Services.AddSingleton(account);
+            builder.Services.AddScoped<Cloudinary>();
+            #endregion
             // Configure the DbContext with SQL Server
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MyAppContext>(options =>

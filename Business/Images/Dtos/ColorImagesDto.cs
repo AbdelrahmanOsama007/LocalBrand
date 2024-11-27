@@ -13,8 +13,8 @@ namespace Business.Images.Dtos
         [Range(1, int.MaxValue, ErrorMessage = "ColorId must be a positive number.")]
         public int ColorId { get; set; }
         [Required(ErrorMessage = "Color code is required.")]
-        [StringLength(7, MinimumLength = 7, ErrorMessage = "Color code must be exactly 7 characters.")]
-        [RegularExpression(@"^#([A-Fa-f0-9]{6})$", ErrorMessage = "Color code must be a valid hex code (e.g., #FFFFFF).")]
+        //[StringLength(7, MinimumLength = 7, ErrorMessage = "Color code must be exactly 7 characters.")]
+            //[RegularExpression(@"^#([A-Fa-f0-9]{6})$", ErrorMessage = "Color code must be a valid hex code (e.g., #FFFFFF).")]
         public string ColorCode { get; set; }
         [Required]
         public List<string> ImageUrls { get; set; }
