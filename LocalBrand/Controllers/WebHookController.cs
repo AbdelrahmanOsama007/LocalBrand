@@ -29,33 +29,40 @@ namespace LocalBrand.Controllers
         {
             try
             {
+                var result = await _orderrepository.GetByIdAsync(int.Parse(merchantOrderId));
                 if (paymentStatus == "SUCCESS")
                 {
-                    var result = await _orderrepository.GetByIdAsync(int.Parse(merchantOrderId));
                     if (result.Success)
                     {
-                        var orderobject = (Order)result.Data;
-                        foreach (var item in orderobject.OrderDetails)
-                        {
-                            var productresult = await _productrepository.GetByIdAsync(item.Product.Id);
-                            Product product;
-                            if (productresult.Success)
-                            {
-                                product = (Product)productresult.Data;
-                                var resulttt = product.Stock.FirstOrDefault(s => s.SizeId == item.SizeId && s.ColorId == item.ColorId);
-                                if (resulttt != null)
-                                {
-                                    resulttt.Quantity = resulttt.Quantity - item.Quantity;
-                                    await _productrepository.SaveChangesAsync();
-                                }
-                            }
-
-                        }
                        return Ok(new OperationResult { Success = true, Data = true, Message = "Ordered Successfully" }) ;
                     }
+                    else
+                    {
+                        return Ok(result);
+                    }
                 }
-                await _orderrepository.DeleteAsync(int.Parse(merchantOrderId));
-                return Ok(new OperationResult { Success = false, Data = false, Message = "Transaction Failed" });
+                else
+                {
+                    var orderobject = (Order)result.Data;
+                    foreach (var item in orderobject.OrderDetails)
+                    {
+                        var productresult = await _productrepository.GetByIdAsync(item.Product.Id);
+                        Product product;
+                        if (productresult.Success)
+                        {
+                            product = (Product)productresult.Data;
+                            var resulttt = product.Stock.FirstOrDefault(s => s.SizeId == item.SizeId && s.ColorId == item.ColorId);
+                            if (resulttt != null)
+                            {
+                                resulttt.Quantity = resulttt.Quantity + item.Quantity;
+                                await _productrepository.SaveChangesAsync();
+                            }
+                        }
+
+                    }
+                    await _orderrepository.DeleteAsync(int.Parse(merchantOrderId));
+                    return Ok(new OperationResult { Success = false, Data = false, Message = "Transaction Failed" });
+                }
             }
             catch (Exception ex)
             {

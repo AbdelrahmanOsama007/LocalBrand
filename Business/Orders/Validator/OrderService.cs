@@ -92,10 +92,10 @@ namespace Business.Orders.Validator
                     neworder.OrderDetails.Add(orderitem);
 
                     var result = product.Stock.FirstOrDefault(s => s.SizeId == item.SizeId && s.ColorId == item.ColorId);
-                    if (result != null && order.PaymentMethod == PaymentMethodEnum.PayOnDelivery)
+                    if (result != null)
                     {
-                            result.Quantity = result.Quantity - item.Quantity;
-                            await _productrepository.SaveChangesAsync();
+                        result.Quantity = result.Quantity - item.Quantity;
+                        await _productrepository.SaveChangesAsync();
                     }
                 }
 
