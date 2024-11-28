@@ -112,7 +112,21 @@ namespace Business.Orders.Validator
                         ToName = $"{order.FirstName} {order.LastName}",
                         ToEmail = order.Email,
                         Subject = "Order Confirmation",
-                        Body = "A7a"
+                        Body = $@"<div style='width: 100%; max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                        <div style='text-align: center; padding: 10px 0;'>
+                            <img src='https://orca-app-sw4g7.ondigitalocean.app/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
+                        </div>
+                        <div style='font-size: 16px; line-height: 1.5;'>
+                            <h2 style='font-size: 24px; color: #333; text-align:center'>Order Confirmation</h2>
+                            <p>Dear <strong>{order.FirstName} {order.LastName}</strong>,</p>
+                            <p>Thank you for shopping with <strong>Eleve Store</strong>! Your order has been successfully placed.</p>
+                            <p>We will deliver it for you as soon as possible.</p>
+                            <p>If you have any questions or need assistance, feel free to contact our support team.</p>
+                        </div>
+                        <div style='text-align: center; font-size: 12px; color: #888; padding-top: 20px;'>
+                            <p>&copy; 2024 Eleve Store | All rights reserved</p>
+                        </div>
+                    </div>"
                     });
                     return new OperationResult() { Success = true, Data = true, Message = "Ordered Successfully" };
                 }
