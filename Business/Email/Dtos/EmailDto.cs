@@ -7,17 +7,10 @@ using System.Threading.Tasks;
 
 namespace Business.Email.Dtos
 {
-    public class ContactDto
+    public class EmailDto
     {
-        [Required]
-        [MinLength(3)]
-        [MaxLength(20)]
-        [RegularExpression(@"^[a-zA-Z\u0600-\u06FF\s]+$", ErrorMessage = "Name can only contain Arabic or English letters and spaces.")]
-        public string Name { get; set; }
         [Required]
         [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; }
-        [Required]
-        public string Message { get; set; }
     }
 }

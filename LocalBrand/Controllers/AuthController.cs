@@ -1,5 +1,6 @@
 ﻿using Business.AdminAuth.Dtos;
 using Business.AdminAuth.Interfaces;
+using Business.Email.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -74,25 +75,31 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        public async Task<IActionResult> ForgotPassword([FromBody] EmailDto emaildto)
         {
             try
             {
-                if (email == null)
+                if (!ModelState.IsValid)
                 {
-                    return BadRequest("Enter Valid Email.");
-                }
-
-                var isSuccessful = await _authService.ForgotPasswordAsync(email);
-                if (isSuccessful)
-                {
-                    _logger.LogInformation($"Temporary password sent successfully to {email}.");
-                    return Ok(new { message = "a message sent successfully. Please check your email." });
+                    var isSuccessful = await _authService.ForgotPasswordAsync(emaildto.Email);
+                    if (isSuccessful)
+                    {
+                        _logger.LogInformation($"Temporary password sent successfully to {emaildto.Email}.");
+                        return Ok(new { message = "a message sent successfully. Please check your email." });
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Failed to send temporary password to {emaildto.Email}.");
+                        return BadRequest(new { error = "Failed to process forgot password request." });
+                    }
                 }
                 else
                 {
-                    _logger.LogWarning($"Failed to send temporary password to {email}.");
-                    return BadRequest(new { error = "Failed to process forgot password request." });
+                    var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                    return BadRequest(new { Errors = errors });
                 }
             }
             catch (Exception ex)
