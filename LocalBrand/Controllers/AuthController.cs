@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace LocalBrand.Controllers
 {
-    [Route("auth")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
