@@ -8,6 +8,6 @@ namespace Model.Enums
 {
     public enum ColorEnum
     {
-        red = 1, black = 2, white = 3, blue = 4
+        Red = 1, Black = 2, White = 3, Blue = 4, Brown = 5, Grey = 6, Avocado = 7, BabyBlue = 8, Beige = 9, MidNight = 10, DarkGreen = 11, Pink = 12, OffWhite = 13
     }
 }

@@ -65,22 +65,31 @@ namespace Infrastructure.Context
                                                              {new Category(){Id = 3, Name = "Unisex" }},
                                                              {new Category(){Id = 4, Name = "Accessories" }}};
 
-            List<SubCategory> Menssubcategories = new List<SubCategory>() { new SubCategory() { Id =1, Name= "T-Shirt", CategoryId = 1},
-                                                               new SubCategory() { Id =2, Name= "Hoddie", CategoryId = 1},
-                                                               new SubCategory() { Id =3, Name= "Short", CategoryId = 1}};
+            List<SubCategory> Menssubcategories = new List<SubCategory>() { new SubCategory() { Id =1, Name= "MenT-Shirt", CategoryId = 1},
+                                                               new SubCategory() { Id =2, Name= "MenHoddie", CategoryId = 1},
+                                                               new SubCategory() { Id =3, Name= "MenShort", CategoryId = 1}};
 
-            List<SubCategory> Womenssubcategories = new List<SubCategory>() { new SubCategory() { Id =4, Name= "T-Shirt", CategoryId = 2},
-                                                               new SubCategory() { Id =5, Name= "Hoddie", CategoryId = 2},
+            List<SubCategory> Womenssubcategories = new List<SubCategory>() { new SubCategory() { Id =4, Name= "WomenT-Shirt", CategoryId = 2},
+                                                               new SubCategory() { Id =5, Name= "WomenHoddie", CategoryId = 2},
                                                                new SubCategory() { Id =6, Name= "Top", CategoryId = 2}};
 
-            List<SubCategory> Unisexsubcategories = new List<SubCategory>() { new SubCategory() { Id = 7, Name = "Hoddie", CategoryId = 3 }};
+            List<SubCategory> Unisexsubcategories = new List<SubCategory>() { new SubCategory() { Id = 7, Name = "UnisexHoddie", CategoryId = 3 }};
 
             List<SubCategory> accessoriessubcategories = new List<SubCategory>() { new SubCategory() { Id = 8, Name = "Perfume", CategoryId = 4 }};
 
-            List<Color> colors = new List<Color>() { new Color() { Id = 1, ColorName = ColorEnum.black.ToString(), ColorCode = "#000"},
-                                                     new Color() { Id = 2, ColorName = ColorEnum.white.ToString(), ColorCode = "#fff"},
-                                                     new Color() { Id = 3, ColorName = ColorEnum.red.ToString(), ColorCode = "#FF0000"},
-                                                     new Color() { Id = 4, ColorName = ColorEnum.blue.ToString(), ColorCode = "#0000FF"}};
+            List<Color> colors = new List<Color>() { new Color() { Id = 1, ColorName = ColorEnum.Black.ToString(), ColorCode = "#000000"},
+                                                     new Color() { Id = 2, ColorName = ColorEnum.White.ToString(), ColorCode = "#ffffff"},
+                                                     new Color() { Id = 3, ColorName = ColorEnum.Red.ToString(), ColorCode = "#FF0000"},
+                                                     new Color() { Id = 4, ColorName = ColorEnum.Blue.ToString(), ColorCode = "#4169e1"},
+                                                     new Color() { Id = 5, ColorName = ColorEnum.Avocado.ToString(), ColorCode = "#7ea122"},
+                                                     new Color() { Id = 6, ColorName = ColorEnum.Beige.ToString(), ColorCode = "#ede8d0"},
+                                                     new Color() { Id = 7, ColorName = ColorEnum.Brown.ToString(), ColorCode = "#964B00"},
+                                                     new Color() { Id = 8, ColorName = ColorEnum.MidNight.ToString(), ColorCode = "#152238"},
+                                                     new Color() { Id = 9, ColorName = ColorEnum.Grey.ToString(), ColorCode = "#808080"},
+                                                     new Color() { Id = 10, ColorName = ColorEnum.DarkGreen.ToString(), ColorCode = "#003200"},
+                                                     new Color() { Id = 11, ColorName = ColorEnum.BabyBlue.ToString(), ColorCode = "#d1e5f4"},
+                                                     new Color() { Id = 12, ColorName = ColorEnum.Pink.ToString(), ColorCode = "#ff69b4"},
+                                                     new Color() { Id = 13, ColorName = ColorEnum.OffWhite.ToString(), ColorCode = "#fffff2"},};
 
             List<Size> sizes = new List<Size>() { new Size() { Id = 1, SizeName = SizeEnum.Small.ToString(), SizeKey = "S"},
                                                   new Size() {Id = 2, SizeName = SizeEnum.Medium.ToString(), SizeKey = "M"},
