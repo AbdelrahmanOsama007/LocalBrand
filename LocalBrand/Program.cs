@@ -1,4 +1,7 @@
 using Business;
+using Business.AdminAuth.Helper;
+using Business.AdminAuth.Interfaces;
+using Business.AdminAuth.Validator;
 using Business.Cart.Interfaces;
 using Business.Cart.Validator;
 using Business.Categories.Interfaces;
@@ -55,10 +58,6 @@ namespace LocalBrand
 
             // Configure Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "LocalBrand API", Version = "v1" });
-            });
 
             // Add logging
             builder.Logging.AddConsole();
@@ -77,7 +76,7 @@ namespace LocalBrand
             builder.Services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
             builder.Services.AddScoped<IGenericRepository<SubCategory>, GenericRepository<SubCategory>>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped<ICategoryRepository,  CategoryRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IWishlistService, WishlistService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IColorService, ColorService>();
@@ -86,7 +85,89 @@ namespace LocalBrand
             builder.Services.AddScoped<IGenericRepository<Size>, GenericRepository<Size>>();
             builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<ImageService, ImageService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
+            builder.Services.AddSingleton<SmtpSettings>();
+            builder.Services.AddSingleton<JWT>();
+            builder.Services.AddSingleton<AppSettings>();
+            builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
+            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+            builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
+
+            //Logger
+            builder.Services.AddLogging(builder =>
+            {
+                builder.AddConsole(); // Log to the console
+            });
+
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 8;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+            });
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                    };
+                });
+            builder.Services.AddControllers();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(swagger =>
+            {
+                swagger.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "LocalBrand Web Api",
+                    Description = "LocalBrand Project"
+                });
+                swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"",
+                });
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+        new OpenApiSecurityScheme
+        {
+        Reference = new OpenApiReference
+        {
+        Type = ReferenceType.SecurityScheme,
+        Id = "Bearer"
+        }
+        },
+        new string[] {}
+        }
+    });
+            });
 
             #region FileServer
 
@@ -100,23 +181,21 @@ namespace LocalBrand
             builder.Services.AddSingleton(account);
             builder.Services.AddScoped<Cloudinary>();
             #endregion
-            // Configure the DbContext with SQL Server
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MyAppContext>(options =>
                 options.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
             builder.Services.AddRateLimiter(options =>
             {
-                // Define a named policy for the "Contact Us" endpoint
                 options.AddPolicy("ContactUsPolicy", context =>
                     RateLimitPartition.GetFixedWindowLimiter(
                         partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
                         factory: _ => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = 5, // Allow 5 requests
-                            Window = TimeSpan.FromMinutes(1), // Within a 1-minute window
+                            PermitLimit = 5,
+                            Window = TimeSpan.FromMinutes(1),
                             QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                            QueueLimit = 2 // Allow 2 queued requests
+                            QueueLimit = 2 
                         }));
 
                 options.OnRejected = async (context, token) =>
@@ -126,11 +205,7 @@ namespace LocalBrand
                 };
             });
 
-            // Configure Identity services
             ConfigureIdentity(builder.Services);
-
-            // Configure JWT Authentication
-            ConfigureJwtAuthentication(builder.Services, builder.Configuration);
 
             var app = builder.Build();
 
@@ -151,34 +226,18 @@ namespace LocalBrand
                     throw;
                 }
             }
-
-
-            // Configure the HTTP request pipeline
             ConfigureHttpRequestPipeline(app);
-
-            // Run the application
-
-
-            
-
             app.Run();
-
-            
-            
-            
-            
         }
 
         private static void RegisterServices(IServiceCollection services)
         {
-            // Application services
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IWishlistService, WishlistService>();
             services.AddScoped<ICartService, CartService>();
 
-            // Repositories
             services.AddScoped<IGenericRepository<Product>, GenericRepository<Product>>();
             services.AddScoped<IGenericRepository<ProductImage>, GenericRepository<ProductImage>>();
             services.AddScoped<IGenericRepository<Stock>, GenericRepository<Stock>>();
@@ -196,28 +255,6 @@ namespace LocalBrand
             services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<MyAppContext>()
                 .AddDefaultTokenProviders();
-        }
-        private static void ConfigureJwtAuthentication(IServiceCollection services, IConfiguration configuration)
-        {
-            var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    RoleClaimType = ClaimTypes.Role // Ensure this line is present
-                };
-            });
         }
 
         private static void ConfigureHttpRequestPipeline(WebApplication app)
