@@ -79,7 +79,7 @@ namespace LocalBrand.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
                     var isSuccessful = await _authService.ForgotPasswordAsync(emaildto.Email);
                     if (isSuccessful)
