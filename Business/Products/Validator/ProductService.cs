@@ -190,11 +190,11 @@ namespace Business.Products.Validator
                 {
                     if(stock.Quantity > 0)
                     {
-                        ProductInfo.Add(new ProductInfoDto() { SizeId = stock.SizeId, ColorId = stock.ColorId, SizeName = stock.Size.SizeKey });
+                        ProductInfo.Add(new ProductInfoDto() { SizeId = stock.SizeId, ColorId = stock.ColorId, SizeName = stock.Size.SizeKey, Quantity = stock.Quantity});
                     }
                     else
                     {
-                        ProductInfo.Add(new ProductInfoDto() {ColorId = stock.ColorId,});
+                        ProductInfo.Add(new ProductInfoDto() {ColorId = stock.ColorId, Quantity = stock.Quantity });
                     }
                 }
 
