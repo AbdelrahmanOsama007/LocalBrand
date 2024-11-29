@@ -34,7 +34,7 @@ namespace Business.Email.Validator
                 message.From.Add(new MailboxAddress(model.FromName, username));
                 message.To.Add(new MailboxAddress(model.ToName, model.ToEmail));
                 message.Subject = model.Subject;
-                message.Body = new TextPart("plain")
+                message.Body = new TextPart("html")
                 {
                     Text = model.Body
                 };
