@@ -36,7 +36,8 @@ namespace Business.Products.Validator
                 var productobject = new Product()
                 {
                     Name = product.Name,
-                    Description = product.Description,
+                    FullDescription = product.FullDescription,
+                    Summary = product.Summary,
                     Price = product.Price,
                     Discount = product.Discount,
                     SubCategoryId = product.SubCategoryId,
@@ -229,6 +230,8 @@ namespace Business.Products.Validator
                     Id = productobject.Id,
                     Name = productobject.Name,
                     Discount = productobject.Discount,
+                    Summary = productobject.Summary,
+                    FullDescription = productobject.FullDescription,
                     PriceBeforeDiscount = productobject.Price,
                     PriceAfterDiscount = ActualPrice,
                     SubCategoryId = productobject.SubCategoryId,
@@ -340,7 +343,8 @@ namespace Business.Products.Validator
                 var existingProduct = (Product)existingProductResult.Data;
 
                     existingProduct.Name = updatedProduct.Name;
-                    existingProduct.Description = updatedProduct.Description;
+                    existingProduct.FullDescription = updatedProduct.FullDescription;
+                    existingProduct.Summary = updatedProduct.Summary;
                     existingProduct.Price = updatedProduct.Price;
                     existingProduct.Discount = updatedProduct.Discount;
                     existingProduct.SubCategoryId = updatedProduct.SubCategoryId;

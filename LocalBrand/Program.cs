@@ -9,6 +9,7 @@ using Business.Categories.Validator;
 using Business.Colors.Interfaces;
 using Business.Colors.Validator;
 using Business.Email.Validator;
+using Business.OrderCleanUp.Validator;
 using Business.Orders.Interfaces;
 using Business.Orders.Validator;
 using Business.Products.Interfaces;
@@ -86,6 +87,7 @@ namespace LocalBrand
             builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<ImageService, ImageService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddHostedService<OrderCleanupService>();
 
             builder.Services.AddSingleton<SmtpSettings>();
             builder.Services.AddSingleton<JWT>();

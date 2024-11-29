@@ -16,6 +16,8 @@ namespace Model.Models
         public DateTime OrderDate { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal SubTotalPrice { get; set; }
+        public PaymentMethodEnum PaymentMethod { get; set; }
+        public bool IsTransactionSuccess { get; set; } = false;
         public OrderStatusEnum OrderStatus { get; set; }
         [ForeignKey("UserAddress")]
         public int AddressId { get; set; }

@@ -56,6 +56,7 @@ namespace Business.Orders.Validator
                 {
                     OrderNumber = await GenerateUniqueOrderNumber(),
                     OrderDate = order.OrderDate,
+                    PaymentMethod = order.PaymentMethod,
                     OrderStatus = Model.Enums.OrderStatusEnum.Processing,
                     OrderDetails = new List<OrderDetails>(),
                     UserAddress = new UserAddress() { FirstName = order.FirstName, LastName = order.LastName, City = order.City, StreetAddress = order.StreetAddress, Appartment = order.Appartment,

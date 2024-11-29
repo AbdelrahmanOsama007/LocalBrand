@@ -18,9 +18,11 @@
             [RegularExpression(@"^[a-zA-Z\s\-]+$", ErrorMessage = "Product Name can only contain letters, spaces, and hyphens.")]
             public string Name { get; set; }
             [Required]
+            public string Summary { get; set; }
+            [Required]
             [MinLength(20)]
             [MaxLength(800)]
-            public string Description { get; set; }
+            public string FullDescription { get; set; }
             [Required]
             [Range(0.01, double.MaxValue, ErrorMessage = "Price must be a positive number.")]
             public decimal Price { get; set; }

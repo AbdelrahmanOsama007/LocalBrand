@@ -14,6 +14,8 @@ namespace Business.Products.Dtos
         public string Name { get; set; }
         public decimal PriceBeforeDiscount { get; set; }
         public decimal PriceAfterDiscount { get; set; }
+        public string Summary { get; set; }
+        public string FullDescription { get; set; }
         public int Discount { get; set; } = 0;
         public int SubCategoryId { get; set; }
         public int CategoryId { get; set; }
