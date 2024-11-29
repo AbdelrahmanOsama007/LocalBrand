@@ -106,28 +106,7 @@ namespace Business.Orders.Validator
                 await transaction.CommitAsync();
                 if(order.PaymentMethod == PaymentMethodEnum.PayOnDelivery)
                 {
-                    var SentEmail = _emailService.SendEmail(new EmailModel()
-                    {
-                        FromName = "Eleve Store",
-                        ToName = $"{order.FirstName} {order.LastName}",
-                        ToEmail = order.Email,
-                        Subject = "Order Confirmation",
-                        Body = $@"<div style='width: 100%; max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
-                        <div style='text-align: center; padding: 10px 0;'>
-                            <img src='https://orca-app-sw4g7.ondigitalocean.app/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
-                        </div>
-                        <div style='font-size: 16px; line-height: 1.5;'>
-                            <h2 style='font-size: 24px; color: #333; text-align:center'>Order Confirmation</h2>
-                            <p>Dear <strong>{order.FirstName} {order.LastName}</strong>,</p>
-                            <p>Thank you for shopping with <strong>Eleve Store</strong>! Your order has been successfully placed.</p>
-                            <p>We will deliver it for you as soon as possible.</p>
-                            <p>If you have any questions or need assistance, feel free to contact our support team.</p>
-                        </div>
-                        <div style='text-align: center; font-size: 12px; color: #888; padding-top: 20px;'>
-                            <p>&copy; 2024 Eleve Store | All rights reserved</p>
-                        </div>
-                    </div>"
-                    });
+                    SendOrderProcessedEmail(order);
                     return new OperationResult() { Success = true, Data = true, Message = "Ordered Successfully" };
                 }
                 var orderinfoobject = new OrderInfo { Id = neworder.Id, TotalPrice = neworder.TotalPrice, Hash = Kashier.create_hash(neworder.Id, neworder.TotalPrice) };
@@ -199,7 +178,7 @@ namespace Business.Orders.Validator
                             Email = order.UserAddress.Email,
                             SubTotal = order.SubTotalPrice,
                             Total = order.TotalPrice,
-                            OrderStatus = order.OrderStatus.ToString(),
+                            OrderStatus = order.OrderStatus,
                             Products = new List<UserProductDto>()
                         };
                         foreach (var orderdetail in order.OrderDetails)
@@ -224,7 +203,6 @@ namespace Business.Orders.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-
         public async Task<OperationResult> GetOrderById(int orderid)
         {
             var result = await _orderrepository.GetByIdAsync(orderid);
@@ -234,7 +212,6 @@ namespace Business.Orders.Validator
             }
             return new OperationResult() { Success = result.Success, Message = result.Message, OnlinePaymentStatus = true };
         }
-
         public async Task<OperationResult> UpdateOrderAsync(AdminOrderDto updatedOrder)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -312,6 +289,17 @@ namespace Business.Orders.Validator
                 }
                 await _orderdetailsrepository.DeleteRangeAsync(order.OrderDetails);
                 order.OrderDetails = OrderDetailsList;
+                if (updatedOrder.OrderStatus == OrderStatusEnum.Delivered) {
+                    order.OrderStatus = updatedOrder.OrderStatus;
+                    var OrderDto = new OrderDto() { FirstName = updatedOrder.FirstName, LastName = updatedOrder.LastName, Email = updatedOrder.Email };
+                    SendOrderDeliveredEmail(OrderDto);
+                }
+                else if(updatedOrder.OrderStatus == OrderStatusEnum.Cancelled)
+                {
+                    order.OrderStatus = updatedOrder.OrderStatus;
+                    var OrderDto = new OrderDto() { FirstName = updatedOrder.FirstName, LastName = updatedOrder.LastName, Email = updatedOrder.Email };
+                    SendOrderCanceledEmail(OrderDto);
+                }
                 var updateresult = await _orderrepository.UpdateAsync(order);
                 await transaction.CommitAsync();
                 return updateresult;
@@ -322,8 +310,6 @@ namespace Business.Orders.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-       
-
         private async Task<string> GenerateUniqueOrderNumber()
         {
             string orderNumber;
@@ -340,8 +326,78 @@ namespace Business.Orders.Validator
 
             return orderNumber;
         }
-
-       
+        public void SendOrderProcessedEmail(OrderDto order)
+        {
+            var SentEmail = _emailService.SendEmail(new EmailModel()
+            {
+                FromName = "Eleve Store",
+                ToName = $"{order.FirstName} {order.LastName}",
+                ToEmail = order.Email,
+                Subject = "Order Confirmation",
+                Body = $@"<div style='width: 100%; max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                        <div style='text-align: center; padding: 10px 0;'>
+                            <img src='https://orca-app-sw4g7.ondigitalocean.app/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
+                        </div>
+                        <div style='font-size: 16px; line-height: 1.5;'>
+                            <h2 style='font-size: 24px; color: #333; text-align:center'>Order Confirmation</h2>
+                            <p>Dear <strong>{order.FirstName} {order.LastName}</strong>,</p>
+                            <p>Thank you for shopping with <strong>Eleve Store</strong>! Your order has been successfully placed.</p>
+                            <p>We will deliver it for you as soon as possible.</p>
+                            <p>If you have any questions or need assistance, feel free to contact our support team.</p>
+                        </div>
+                        <div style='text-align: center; font-size: 12px; color: #888; padding-top: 20px;'>
+                            <p>&copy; 2024 Eleve Store | All rights reserved</p>
+                        </div>
+                    </div>"
+            });
+        }
+        public void SendOrderDeliveredEmail(OrderDto order) {
+            var SentEmail = _emailService.SendEmail(new EmailModel()
+            {
+                FromName = "Eleve Store",
+                ToName = $"{order.FirstName} {order.LastName}",
+                ToEmail = order.Email,
+                Subject = "Order Delevired",
+                Body = $@"<div style='width: 100%; max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                        <div style='text-align: center; padding: 10px 0;'>
+                            <img src='https://orca-app-sw4g7.ondigitalocean.app/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
+                        </div>
+                        <div style='font-size: 16px; line-height: 1.5;'>
+                            <h2 style='font-size: 24px; color: #333; text-align:center'>Order Delevired</h2>
+                            <p>Dear <strong>{order.FirstName} {order.LastName}</strong>,</p>
+                            <p>Thank you for shopping with <strong>Eleve Store</strong>! Your order has been successfully delevired.</p>
+                            <p>If you have any feedback , questions or need assistance, feel free to contact our support team.</p>
+                        </div>
+                        <div style='text-align: center; font-size: 12px; color: #888; padding-top: 20px;'>
+                            <p>&copy; 2024 Eleve Store | All rights reserved</p>
+                        </div>
+                    </div>"
+            });
+        }
+        public void SendOrderCanceledEmail(OrderDto order)
+        {
+            var SentEmail = _emailService.SendEmail(new EmailModel()
+            {
+                FromName = "Eleve Store",
+                ToName = $"{order.FirstName} {order.LastName}",
+                ToEmail = order.Email,
+                Subject = "Order Canceled",
+                Body = $@"<div style='width: 100%; max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                        <div style='text-align: center; padding: 10px 0;'>
+                            <img src='https://orca-app-sw4g7.ondigitalocean.app/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
+                        </div>
+                        <div style='font-size: 16px; line-height: 1.5;'>
+                            <h2 style='font-size: 24px; color: #333; text-align:center'>Order Canceled</h2>
+                            <p>Dear <strong>{order.FirstName} {order.LastName}</strong>,</p>
+                            <p>Thank you for shopping with <strong>Eleve Store</strong>! We are sorry to tell you that your order has been successfully canceled.</p>
+                            <p>If you have any feedback , questions or need assistance, feel free to contact our support team.</p>
+                        </div>
+                        <div style='text-align: center; font-size: 12px; color: #888; padding-top: 20px;'>
+                            <p>&copy; 2024 Eleve Store | All rights reserved</p>
+                        </div>
+                    </div>"
+            });
+        }
     }
     public class Kashier
     {

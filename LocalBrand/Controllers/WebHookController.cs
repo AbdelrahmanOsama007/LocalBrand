@@ -1,4 +1,6 @@
 ﻿using Business.Email.Validator;
+using Business.Orders.Dtos;
+using Business.Orders.Interfaces;
 using Infrastructure.Context;
 using Infrastructure.IGenericRepository;
 using Infrastructure.IRepository;
@@ -16,13 +18,15 @@ namespace LocalBrand.Controllers
     {
         private readonly IGenericRepository<Order> _orderrepository;
         private readonly IGenericRepository<Product> _productrepository;
+        private readonly IOrderService _orderService;
         private readonly ILogger<ColorController> _logger;
 
-        public WebHookController(IGenericRepository<Order> orderrepository, ILogger<ColorController> logger , IGenericRepository<Product> productrepository)
+        public WebHookController(IGenericRepository<Order> orderrepository, ILogger<ColorController> logger , IGenericRepository<Product> productrepository, IOrderService orderService)
         {
             _orderrepository = orderrepository;
             _productrepository = productrepository;
             _logger = logger;
+            _orderService = orderService;
         }
         [HttpPost("CompletePayment")]
         public async Task<IActionResult> CompletePayment([FromForm] string paymentStatus, [FromForm] string merchantOrderId)
@@ -30,10 +34,13 @@ namespace LocalBrand.Controllers
             try
             {
                 var result = await _orderrepository.GetByIdAsync(int.Parse(merchantOrderId));
+                var orderobject = (Order)result.Data;
                 if (paymentStatus == "SUCCESS")
                 {
                     if (result.Success)
                     {
+                        var orderdto = new OrderDto() { FirstName = orderobject.UserAddress.FirstName, LastName = orderobject.UserAddress.LastName, Email = orderobject.UserAddress.Email};
+                        _orderService.SendOrderProcessedEmail(orderdto);
                        return Ok(new OperationResult { Success = true, Data = true, Message = "Ordered Successfully" }) ;
                     }
                     else
@@ -43,25 +50,31 @@ namespace LocalBrand.Controllers
                 }
                 else
                 {
-                    var orderobject = (Order)result.Data;
-                    foreach (var item in orderobject.OrderDetails)
+                    if (result.Success)
                     {
-                        var productresult = await _productrepository.GetByIdAsync(item.Product.Id);
-                        Product product;
-                        if (productresult.Success)
+                        foreach (var item in orderobject.OrderDetails)
                         {
-                            product = (Product)productresult.Data;
-                            var resulttt = product.Stock.FirstOrDefault(s => s.SizeId == item.SizeId && s.ColorId == item.ColorId);
-                            if (resulttt != null)
+                            var productresult = await _productrepository.GetByIdAsync(item.Product.Id);
+                            Product product;
+                            if (productresult.Success)
                             {
-                                resulttt.Quantity = resulttt.Quantity + item.Quantity;
-                                await _productrepository.SaveChangesAsync();
+                                product = (Product)productresult.Data;
+                                var resulttt = product.Stock.FirstOrDefault(s => s.SizeId == item.SizeId && s.ColorId == item.ColorId);
+                                if (resulttt != null)
+                                {
+                                    resulttt.Quantity = resulttt.Quantity + item.Quantity;
+                                    await _productrepository.SaveChangesAsync();
+                                }
                             }
-                        }
 
+                        }
+                        await _orderrepository.DeleteAsync(int.Parse(merchantOrderId));
+                        return Ok(new OperationResult { Success = false, Data = false, Message = "Transaction Failed" });
                     }
-                    await _orderrepository.DeleteAsync(int.Parse(merchantOrderId));
-                    return Ok(new OperationResult { Success = false, Data = false, Message = "Transaction Failed" });
+                    else
+                    {
+                        return Ok(result);
+                    }
                 }
             }
             catch (Exception ex)
