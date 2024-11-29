@@ -36,7 +36,7 @@ namespace Business.OrderCleanUp.Validator
                     if (staleOrdersResult.Success && staleOrdersResult.Data is List<Order> staleOrders)
                     {
                         var filteredOrders = staleOrders
-                            .Where(o => !o.IsTransactionSuccess && o.PaymentMethod == PaymentMethodEnum.OnlinePayment && o.OrderDate.AddMinutes(1) <= DateTime.UtcNow && !o.IsDeleted).ToList();
+                            .Where(o => !o.IsTransactionSuccess && o.PaymentMethod == PaymentMethodEnum.OnlinePayment && o.OrderDate.AddMinutes(15) <= DateTime.UtcNow && !o.IsDeleted).ToList();
 
                         foreach (var order in filteredOrders)
                         {
@@ -66,7 +66,7 @@ namespace Business.OrderCleanUp.Validator
                 {
                     _logger.LogError(ex, "Error while cleaning up stale orders.");
                 }
-                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(15), stoppingToken);
             }
         }
     }
