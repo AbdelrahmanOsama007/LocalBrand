@@ -69,6 +69,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("AddProduct")]
+        [Authorize]
         public async Task<IActionResult> AddProduct(AdminProductDto product)
         {
             try
@@ -99,6 +100,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("UpdateProduct")]
+        [Authorize]
         public async Task<IActionResult> UpdateProduct(int id, AdminProductDto product)
         {
             try
@@ -124,6 +126,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("DeleteProduct")]
+        [Authorize]
         public async Task<IActionResult> DeleteProduct([FromBody]int id)
         {
             try

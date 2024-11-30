@@ -78,6 +78,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("DeleteOrder")]
+        [Authorize]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             try
