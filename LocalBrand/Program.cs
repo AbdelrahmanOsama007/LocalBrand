@@ -289,7 +289,7 @@ namespace LocalBrand
                 });
             }
 
-            // app.UseHttpsRedirection(); // Uncomment if using HTTPS
+            app.UseHttpsRedirection();
             app.UseCors("AllowAllDomains");
             app.UseAuthentication();
             app.UseAuthorization();

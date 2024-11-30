@@ -97,6 +97,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetAllOrders")]
+        [Authorize]
         public async Task<IActionResult> GetAllOrders()
         {
             try
