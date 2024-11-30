@@ -39,7 +39,6 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("AddCategory")]
-        [Authorize]
         public async Task<IActionResult> AddCategory([FromBody] NewCategoryDto category)
         {
             try
@@ -69,7 +68,6 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("UpdateCategory")]
-        [Authorize]
         public async Task<IActionResult> UpdateCategory(int id,[FromBody] NewCategoryDto category)
         {
             try
@@ -95,7 +93,6 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("DeleteCategory")]
-        [Authorize]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             try

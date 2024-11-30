@@ -109,7 +109,6 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("change-password")]
-        [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
         {
             try

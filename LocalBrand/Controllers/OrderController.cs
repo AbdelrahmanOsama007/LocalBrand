@@ -48,7 +48,6 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("UpdateOrder")]
-        [Authorize]
         public async Task<IActionResult> UpdateOrder(AdminOrderDto updatedOrder)
         {
             try
@@ -78,7 +77,6 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("DeleteOrder")]
-        [Authorize]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             try
