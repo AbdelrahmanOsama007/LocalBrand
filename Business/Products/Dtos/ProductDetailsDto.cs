@@ -18,6 +18,7 @@ namespace Business.Products.Dtos
         public string FullDescription { get; set; }
         public int Discount { get; set; } = 0;
         public int SubCategoryId { get; set; }
+        public string SubCategoryName { get; set; }
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
         public bool IsOutOfStock { get; set; }

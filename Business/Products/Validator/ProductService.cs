@@ -235,6 +235,7 @@ namespace Business.Products.Validator
                     PriceBeforeDiscount = productobject.Price,
                     PriceAfterDiscount = ActualPrice,
                     SubCategoryId = productobject.SubCategoryId,
+                    SubCategoryName = productobject.SubCategory.Name,
                     CategoryId = productobject.SubCategory.Category.Id,
                     CategoryName = productobject.SubCategory.Category.Name,
                     SizesAndColorsQuantity = ProductInfo,

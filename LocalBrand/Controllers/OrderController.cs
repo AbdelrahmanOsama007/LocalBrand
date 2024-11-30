@@ -1,6 +1,7 @@
 ﻿using Business.Orders.Dtos;
 using Business.Orders.Interfaces;
 using Business.Orders.Validator;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Model.Models;
 
@@ -47,6 +48,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("UpdateOrder")]
+        [Authorize]
         public async Task<IActionResult> UpdateOrder(AdminOrderDto updatedOrder)
         {
             try
