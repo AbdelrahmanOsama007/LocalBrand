@@ -120,6 +120,7 @@ namespace Business.Products.Validator
                                 PriceAfterDiscount = ActualPrice,
                                 Discount = product.Discount,
                                 SubCategoryId = product.SubCategoryId,
+                                SubCategoryName = product.SubCategory.Name,
                                 Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name },
                                 IsOutOfStock = IsOutOfStock
                             };
