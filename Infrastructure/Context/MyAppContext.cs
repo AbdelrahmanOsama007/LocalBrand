@@ -101,7 +101,8 @@ namespace Infrastructure.Context
                                                   new Size() {Id = 8, SizeName = SizeEnum.Size36.ToString(), SizeKey = "36"},
                                                   new Size() {Id = 9, SizeName = SizeEnum.Size38.ToString(), SizeKey = "38"},
                                                   new Size() {Id = 10, SizeName = SizeEnum.Size40.ToString(), SizeKey = "40"},
-                                                  new Size() {Id = 11, SizeName = SizeEnum.S100ML.ToString(), SizeKey = "100 ML"}};
+                                                  new Size() {Id = 11, SizeName = SizeEnum.S100ML.ToString(), SizeKey = "100 ML"},
+                                                  new Size() {Id = 12, SizeName = SizeEnum.S50ML.ToString(), SizeKey = "50 ML"}};
 
             modelBuilder.Entity<Category>()
             .HasData(categories);

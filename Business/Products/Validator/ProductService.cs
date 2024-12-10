@@ -330,6 +330,49 @@ namespace Business.Products.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
+
+        public async Task<OperationResult> GetSaleProducts()
+        {
+            try
+            {
+                var productlistresult = await _productRepository.GetSaleProducts();
+
+                if (!productlistresult.Success)
+                {
+                    return productlistresult;
+                }
+
+                var productlist = (List<Product>)productlistresult.Data;
+                var productsdto = new List<ProductDto>();
+                foreach (var product in productlist)
+                {
+                    var IsOutOfStock = true;
+                    IsOutOfStock = CheckStock(product);
+
+                    var ActualPrice = GetActualPrice(product.Price, product.Discount);
+
+                    var peoductdto = new ProductDto()
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        PriceBeforeDiscount = product.Price,
+                        PriceAfterDiscount = ActualPrice,
+                        Discount = product.Discount,
+                        SubCategoryId = product.SubCategoryId,
+                        Images = new List<string>() { product.ProductImages.ToList()[0].Name, product.ProductImages.ToList()[1].Name },
+                        IsOutOfStock = IsOutOfStock
+                    };
+                    productsdto.Add(peoductdto);
+                }
+                productsdto.RemoveAll(product => product.IsOutOfStock);
+                return new OperationResult() { Success = true, Message = productlistresult.Message, Data = productsdto };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
+            }
+        }
+
         public async Task<OperationResult> UpdateProductAsync(int id, AdminProductDto updatedProduct)
         {
             using var transaction = await _productrepository.BeginTransactionAsync();

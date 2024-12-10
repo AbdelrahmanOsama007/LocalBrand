@@ -18,5 +18,6 @@ namespace Business.Products.Interfaces
         Task<OperationResult> GetProductsBySubCategoryAsync(int id);
         Task<OperationResult> GetProductsByCategoryAsync(int categoryId);
         Task<OperationResult> GetBestSellers();
+        Task<OperationResult> GetSaleProducts();
     }
 }

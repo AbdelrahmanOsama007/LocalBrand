@@ -92,5 +92,18 @@ namespace Infrastructure.Repository
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
+
+        public async Task<OperationResult> GetSaleProducts()
+        {
+            try
+            {
+                var productlist = await _context.Products.Where(p => p.Discount > 0).ToListAsync();
+                return new OperationResult() { Success = true, Message = "Products retrieved successfully", Data = productlist };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
+            }
+        }
     }
 }

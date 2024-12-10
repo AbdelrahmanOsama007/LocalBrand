@@ -19,5 +19,6 @@ namespace Model.Enums
         Size38 = 9,
         Size40 = 10,
         S100ML = 11,
+        S50ML = 12,
     }
 }

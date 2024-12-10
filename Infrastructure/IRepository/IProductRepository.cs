@@ -12,6 +12,7 @@ namespace Infrastructure.IRepository
         Task<OperationResult> GetProductsBySubCaregory(int id);
         Task<OperationResult> GetProductsByCategoryId(int categoryid);
         Task<OperationResult> GetBestSellers();
+        Task<OperationResult> GetSaleProducts();
         Task<OperationResult> GetWishlistProducts(int[] Ids);
         Task<OperationResult> CheckStockQuantity(CartInfo productinfo);
     }
