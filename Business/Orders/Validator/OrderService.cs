@@ -2,6 +2,7 @@
 using Business.Orders.Dtos;
 using Business.Orders.Interfaces;
 using Business.Products.Dtos;
+using Ganss.Xss;
 using Infrastructure.Context;
 using Infrastructure.IGenericRepository;
 using Infrastructure.IRepository;
@@ -59,8 +60,8 @@ namespace Business.Orders.Validator
                     PaymentMethod = order.PaymentMethod,
                     OrderStatus = Model.Enums.OrderStatusEnum.Processing,
                     OrderDetails = new List<OrderDetails>(),
-                    UserAddress = new UserAddress() { FirstName = order.FirstName, LastName = order.LastName, City = order.City, StreetAddress = order.StreetAddress, Appartment = order.Appartment,
-                                                      PhoneNumber = order.PhoneNumber, Email = order.Email, PaymentMethod = order.PaymentMethod.ToString() }
+                    UserAddress = new UserAddress() { FirstName = SanitizeInput(order.FirstName), LastName = SanitizeInput(order.LastName), City = SanitizeInput(order.City), StreetAddress = SanitizeInput(order.StreetAddress), Appartment = SanitizeInput(order.Appartment ?? string.Empty),
+                                                      PhoneNumber = SanitizeInput(order.PhoneNumber), Email = SanitizeInput(order.Email), PaymentMethod = SanitizeInput(order.PaymentMethod.ToString()) }
                 };
                 decimal subtotal = 0;
                 decimal total = 0;
@@ -398,6 +399,11 @@ namespace Business.Orders.Validator
                         </div>
                     </div>"
             });
+        }
+        private string SanitizeInput(string input)
+        {
+            var sanitizer = new HtmlSanitizer();
+            return sanitizer.Sanitize(input);
         }
     }
     public class Kashier
