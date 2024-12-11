@@ -10,16 +10,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business.Email.Dtos;
+using Infrastructure.IGenericRepository;
+using Model.Enums;
+using Infrastructure.IRepository;
+using Infrastructure.Migrations;
 
 namespace Business.Email.Validator
 {
     public class EmailService
     {
         private readonly IConfiguration _configuration;
-
-        public EmailService(IConfiguration configuration)
+        private readonly IGenericRepository<ReceivedEmail> _receivedemailRepository;
+        private readonly IEmailRepository _emailRepository;
+        public EmailService(IConfiguration configuration, IGenericRepository<ReceivedEmail> receivedemailRepository, IEmailRepository emailRepository)
         {
             _configuration = configuration;
+            _receivedemailRepository = receivedemailRepository;
+            _emailRepository = emailRepository;
         }
         public bool SendEmail(EmailModel model)
         {
@@ -54,37 +61,45 @@ namespace Business.Email.Validator
                     return false;
                 }
         }
-        public bool RecieveEmail(ContactDto model)
+        public async Task<OperationResult> ReceiveEmail(ContactDto model)
         {
-            var smtpSettings = _configuration.GetSection("SmtpSettings");
-            string smtpHost = smtpSettings["Host"];
-            int smtpPort = int.Parse(smtpSettings["Port"]);
-            bool enableSsl = bool.Parse(smtpSettings["EnableSsl"]);
-            string username = smtpSettings["Username"];
-            string password = smtpSettings["Password"];
-
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(model.Name, model.Email));
-            message.To.Add(new MailboxAddress("Eleve Store", username));
-            message.Subject = "Client Message";
-            message.Body = new TextPart("plain")
-            {
-                Text = model.Message
-            };
-            var smtpClient = new SmtpClient();
-            smtpClient.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-            smtpClient.Connect(smtpHost, smtpPort, SecureSocketOptions.SslOnConnect);
-            smtpClient.Authenticate(username, password);
             try
             {
-                smtpClient.Send(message);
-                smtpClient.Disconnect(true);
-                smtpClient.Dispose();
-                return true;
+                var receivedemail = new ReceivedEmail()
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    Message = model.Message,
+                    EmailStatus = ReceviedEmailEnum.Unread,
+                };
+                var result = await _receivedemailRepository.AddAsync(receivedemail);
+                return result;
             }
             catch (Exception ex)
             {
-                return false;
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
+            }
+        }
+        public async Task<OperationResult> GetAllReceivedEmails(EmailPagination emailmodel)
+        {
+            try
+            {
+                return await _emailRepository.GetAllReceivedEmails(emailmodel);
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something went wrong. Please try again later.", DevelopMessage = ex.Message };
+            }
+        }
+        public async Task<OperationResult> EditEmailStatus(ContactInfo contactobject)
+        {
+            try
+            {
+                return await _emailRepository.EditEmailStatus(contactobject);
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
     }

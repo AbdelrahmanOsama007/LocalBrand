@@ -27,6 +27,7 @@ namespace Infrastructure.Context
         public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<ProductColorImage> ProductColorImages { get; set; }
         public DbSet<UserAddress> UserAddresses { get; set; }
+        public DbSet<ReceivedEmail> ReceivedEmails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

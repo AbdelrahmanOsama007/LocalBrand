@@ -78,12 +78,14 @@ namespace LocalBrand
             builder.Services.AddScoped<IGenericRepository<SubCategory>, GenericRepository<SubCategory>>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IEmailRepository, EmailRepository>();
             builder.Services.AddScoped<IWishlistService, WishlistService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IColorService, ColorService>();
             builder.Services.AddScoped<ISizeService, SizeService>();
             builder.Services.AddScoped<IGenericRepository<Color>, GenericRepository<Color>>();
             builder.Services.AddScoped<IGenericRepository<Size>, GenericRepository<Size>>();
+            builder.Services.AddScoped<IGenericRepository<ReceivedEmail>, GenericRepository<ReceivedEmail>>();
             builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<ImageService, ImageService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
