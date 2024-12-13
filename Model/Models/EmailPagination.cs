@@ -12,11 +12,13 @@ namespace Model.Models
         public string SearchParam { get; set; }
         public int EmailStatus { get; set; }
         public int PageNumber { get; set; }
+        public int PageSize { get; set; }
         public EmailPagination()
         {
             SearchParam = string.Empty;
             EmailStatus = 0;
             PageNumber = 1;
+            PageSize = 10;
         }
     }
 }

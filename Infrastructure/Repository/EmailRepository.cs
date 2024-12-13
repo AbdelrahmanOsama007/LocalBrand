@@ -51,19 +51,19 @@ namespace Infrastructure.Repository
                     query = query.Where(e => e.EmailStatus == (ReceviedEmailEnum)emailmodel.EmailStatus);
                 }
                 var totalRecords = await query.CountAsync();
-                var emails = await query.Skip((emailmodel.PageNumber - 1) * 10).Take(10).ToListAsync();
+                var emails = await query.Skip((emailmodel.PageNumber - 1) * emailmodel.PageSize).Take(emailmodel.PageSize).ToListAsync();
                 if (emails.Any())
                 {
                     return new OperationResult
                     {
-                        Success = true,Message = "Data retrieved successfully.",Data = new {Emails = emails,TotalRecords = totalRecords,PageNumber = emailmodel.PageNumber,PageSize = 10,TotalPages = (int)Math.Ceiling((double)totalRecords / 10)}
+                        Success = true,Message = "Data retrieved successfully.",Data = new {Emails = emails,TotalRecords = totalRecords,PageNumber = emailmodel.PageNumber,PageSize = emailmodel.PageSize,TotalPages = (int)Math.Ceiling((double)totalRecords / emailmodel.PageSize)}
                     };
                 }
                 else
                 {
                     return new OperationResult
                     {
-                        Success = true,Message = "No data found!",Data = new{Emails = new List<ReceivedEmail>(),TotalRecords = 0,PageNumber = emailmodel.PageNumber,PageSize = 10,TotalPages = 0}
+                        Success = true,Message = "No data found!",Data = new{Emails = new List<ReceivedEmail>(),TotalRecords = 0,PageNumber = emailmodel.PageNumber,PageSize = emailmodel.PageSize,TotalPages = 0}
                     };
                 }
             }
