@@ -15,5 +15,6 @@ namespace Model.Models
         public string Email { get; set; }
         public string Message { get; set; }
         public ReceviedEmailEnum EmailStatus { get; set; }
+        public string EmailDate { get; set; }
     }
 }
