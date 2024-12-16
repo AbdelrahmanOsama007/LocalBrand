@@ -71,7 +71,7 @@ namespace Business.Email.Validator
                     Email = model.Email,
                     Message = model.Message,
                     EmailStatus = ReceviedEmailEnum.Unread,
-                    EmailDate = DateTime.Now.ToString("yyyy-MM-dd (dddd) hh:mm tt")
+                    EmailDate = DateTime.Now.ToString("dd-MM-yyyy (dddd) hh:mm tt")
                 };
                 var result = await _receivedemailRepository.AddAsync(receivedemail);
                 return result;
