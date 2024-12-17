@@ -39,7 +39,6 @@ namespace Business.Orders.Dtos
         [MaxLength(40)]
         [RegularExpression(@"^[a-zA-Z0-9\u0600-\u06FF\s]+$", ErrorMessage = "Street Address can only contain letters, numbers, and spaces.")]
         public string StreetAddress { get; set; }
-        [MinLength(3)]
         [MaxLength(20)]
         [RegularExpression(@"^[a-zA-Z0-9\u0600-\u06FF\s]+$", ErrorMessage = "Street Address can only contain letters, numbers, and spaces.")]
         public string? Appartment { get; set; }
