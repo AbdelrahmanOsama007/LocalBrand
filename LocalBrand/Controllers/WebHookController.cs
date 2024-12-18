@@ -6,6 +6,7 @@ using Infrastructure.IGenericRepository;
 using Infrastructure.IRepository;
 using Infrastructure.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Model.Enums;
 using Model.Models;
@@ -29,6 +30,7 @@ namespace LocalBrand.Controllers
             _orderService = orderService;
         }
         [HttpPost("CompletePayment")]
+        [EnableRateLimiting("CompletePaymentPolicy")]
         public async Task<IActionResult> CompletePayment([FromForm] string paymentStatus, [FromForm] string merchantOrderId)
         {
             try

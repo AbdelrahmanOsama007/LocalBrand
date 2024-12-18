@@ -1,6 +1,7 @@
 ﻿using Business.Colors.Interfaces;
 using Business.Sizes.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LocalBrand.Controllers
 {
@@ -16,6 +17,7 @@ namespace LocalBrand.Controllers
             _sizeService = sizeService;
         }
         [HttpPost("GetAllSizes")]
+        [EnableRateLimiting("GetAllSizesPolicy")]
         public async Task<IActionResult> GetAllSizes()
         {
             try

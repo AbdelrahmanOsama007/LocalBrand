@@ -3,6 +3,7 @@ using Business.Orders.Interfaces;
 using Business.Orders.Validator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Model.Models;
 
 namespace LocalBrand.Controllers
@@ -19,6 +20,7 @@ namespace LocalBrand.Controllers
             _logger = logger;
         }
         [HttpPost("AddNewOrder")]
+        [EnableRateLimiting("AddNewOrderPolicy")]
         public async Task<IActionResult> AddOrder(OrderDto order)
         {
             try
@@ -48,6 +50,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("UpdateOrder")]
+        [EnableRateLimiting("UpdateOrderPolicy")]
         public async Task<IActionResult> UpdateOrder(AdminOrderDto updatedOrder)
         {
             try
@@ -77,6 +80,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("DeleteOrder")]
+        [EnableRateLimiting("DeleteOrderPolicy")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             try
@@ -95,6 +99,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetAllOrders")]
+        [EnableRateLimiting("GetAllOrdersPolicy")]
         public async Task<IActionResult> GetAllOrders()
         {
             try
@@ -117,6 +122,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetOrderById")]
+        [EnableRateLimiting("GetOrderByIdPolicy")]
         public async Task<IActionResult> GetOrderById(int orderid)
         {
             try

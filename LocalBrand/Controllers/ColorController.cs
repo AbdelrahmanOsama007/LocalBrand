@@ -1,6 +1,7 @@
 ﻿using Business.Cart.Interfaces;
 using Business.Colors.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LocalBrand.Controllers
 {
@@ -16,6 +17,7 @@ namespace LocalBrand.Controllers
             _colorService = cartService;
         }
         [HttpPost("GetAllColors")]
+        [EnableRateLimiting("GetAllColorsPolicy")]
         public async Task<IActionResult> GetAllColors()
         {
             try

@@ -2,6 +2,7 @@
 using Business.Categories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LocalBrand.Controllers
 {
@@ -17,6 +18,7 @@ namespace LocalBrand.Controllers
             _logger = logger;
         }
         [HttpPost("GetAllCategories")]
+        [EnableRateLimiting("GetAllCategoriesPolicy")]
         public async Task<IActionResult> GetAllCategories()
         {
             try
@@ -39,6 +41,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("AddCategory")]
+        [EnableRateLimiting("AddCategoryPolicy")]
         public async Task<IActionResult> AddCategory([FromBody] NewCategoryDto category)
         {
             try
@@ -68,6 +71,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("UpdateCategory")]
+        [EnableRateLimiting("UpdateCategoryPolicy")]
         public async Task<IActionResult> UpdateCategory(int id,[FromBody] NewCategoryDto category)
         {
             try
@@ -93,6 +97,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("DeleteCategory")]
+        [EnableRateLimiting("DeleteCategoryPolicy")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             try
@@ -111,6 +116,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetSubCategories")]
+        [EnableRateLimiting("GetSubCategoriesPolicy")]
         public async Task<IActionResult> GetSubCats([FromBody]int id)
         {
             try
@@ -133,6 +139,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetCategoryName")]
+        [EnableRateLimiting("GetCategoryNamePolicy")]
         public async Task<IActionResult> GetCategoryDetails([FromBody] int id)
         {
             try

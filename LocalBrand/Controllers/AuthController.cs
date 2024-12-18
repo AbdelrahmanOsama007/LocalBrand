@@ -4,6 +4,7 @@ using Business.Email.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Model.Enums;
 using System.Security.Claims;
 
@@ -49,6 +50,7 @@ namespace LocalBrand.Controllers
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting("loginPolicy")]
         public async Task<IActionResult> Login(LoginDto model)
         {
             try
@@ -75,6 +77,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("forgot-password")]
+        [EnableRateLimiting("forgot-passwordPolicy")]
         public async Task<IActionResult> ForgotPassword([FromBody] EmailDto emaildto)
         {
             try
@@ -109,6 +112,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("change-password")]
+        [EnableRateLimiting("change-passwordPolicy")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
         {
             try

@@ -1,5 +1,6 @@
 ﻿using Business.Wishlist.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LocalBrand.Controllers
 {
@@ -15,6 +16,7 @@ namespace LocalBrand.Controllers
             _wishlistService = wishlistService;
         }
         [HttpPost("GetWishListProducts")]
+        [EnableRateLimiting("GetWishListProductsPolicy")]
         public async Task<IActionResult> GetWishlistProducts([FromBody] int[] Ids)
         {
             try

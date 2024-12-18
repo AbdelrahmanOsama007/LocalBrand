@@ -1,5 +1,6 @@
 ﻿using Business.Cart.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Model.Models;
 
@@ -17,6 +18,7 @@ namespace LocalBrand.Controllers
             _cartService = cartService;
         }
         [HttpPost("CheckStockQuantity")]
+        [EnableRateLimiting("CheckStockQuantityPolicy")]
         public async Task<IActionResult> CheckStockQuantity(CartInfo productinfo)
         {
             try
@@ -39,6 +41,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("CheckCurrentStockQuantity")]
+        [EnableRateLimiting("CheckCurrentStockQuantityPolicy")]
         public async Task<IActionResult> CheckCurrentStockQuantity(CartInfo productinfo)
         {
             try
@@ -62,6 +65,7 @@ namespace LocalBrand.Controllers
         }
 
         [HttpPost("GetCartProducts")]
+        [EnableRateLimiting("GetCartProductsPolicy")]
         public async Task<IActionResult> GetCartProducts(CartInfo[] productsinfo)
         {
             try

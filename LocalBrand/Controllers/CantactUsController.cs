@@ -53,6 +53,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetAllEmails")]
+        [EnableRateLimiting("GetAllEmailsPolicy")]
         public async Task<IActionResult> GetAllEmails(EmailPagination emailmodel)
         {
             try
@@ -75,6 +76,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("EditEmailStatus")]
+        [EnableRateLimiting("EditEmailStatusPolicy")]
         public async Task<IActionResult> EditEmailStatus(ContactInfo contactobject)
         {
             try

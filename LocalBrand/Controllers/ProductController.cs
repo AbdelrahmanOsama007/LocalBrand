@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.IdentityModel.Tokens;
 using Model.Models;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LocalBrand.Controllers
 {
@@ -28,6 +29,7 @@ namespace LocalBrand.Controllers
             this.imageService = imageService;
         }
         [HttpPost("GetAllProducts")]
+        [EnableRateLimiting("GetAllProductsPolicy")]
         public async Task<IActionResult> GetAllProducts([FromBody] string? searchQuery = null)
         {
             try
@@ -50,6 +52,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetProductById")]
+        [EnableRateLimiting("GetProductByIdPolicy")]
         public async Task<IActionResult> GetProductById([FromBody]int id)
         {
             try
@@ -69,6 +72,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("AddProduct")]
+        [EnableRateLimiting("AddProductPolicy")]
         public async Task<IActionResult> AddProduct(AdminProductDto product)
         {
             try
@@ -99,6 +103,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("UpdateProduct")]
+        [EnableRateLimiting("UpdateProductPolicy")]
         public async Task<IActionResult> UpdateProduct(int id, AdminProductDto product)
         {
             try
@@ -124,6 +129,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("DeleteProduct")]
+        [EnableRateLimiting("DeleteProductPolicy")]
         public async Task<IActionResult> DeleteProduct([FromBody]int id)
         {
             try
@@ -142,6 +148,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetProductBySubCategory")]
+        [EnableRateLimiting("GetProductBySubCategoryPolicy")]
         public async Task<IActionResult> GetProductBySubCategory([FromBody]int id)
         {
             try
@@ -161,6 +168,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetBestSeller")]
+        [EnableRateLimiting("GetBestSellerPolicy")]
         public async Task<IActionResult> GetBestSellerProducts()
         {
             try
@@ -183,6 +191,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetProductsByCatId")]
+        [EnableRateLimiting("GetProductsByCatIdPolicy")]
         public async Task<IActionResult> GetProductsByCatId([FromBody]int id)
         {
             try
@@ -202,6 +211,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("GetSaleProducts")]
+        [EnableRateLimiting("GetSaleProductsPolicy")]
         public async Task<IActionResult> GetSaleProducts()
         {
             try
@@ -224,6 +234,7 @@ namespace LocalBrand.Controllers
             }
         }
         [HttpPost("uploadImage")]
+        [EnableRateLimiting("uploadImagePolicy")]
         public Task< List<string> >uploadImage( [FromBody] List <string> image)
         {
           List<string> imageUrl =   imageService.UploadBase64Images(image);
