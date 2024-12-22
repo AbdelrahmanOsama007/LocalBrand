@@ -11,7 +11,7 @@ namespace Business.Orders.Dtos
     public class AdminOrderDto
     {
         public int OrderId { get; set; }
-        public DateTime OrderDate { get; set; }
+        public string OrderDate { get; set; }
         public string OrderNumber { get; set; }
         public OrderStatusEnum OrderStatus { get; set; }
         public string FirstName { get; set; }

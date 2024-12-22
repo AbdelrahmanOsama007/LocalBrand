@@ -18,6 +18,7 @@ namespace Business.Email.Dtos
         [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; }
         [Required]
+        [RegularExpression(@"^[a-zA-Z0-9\s\-+=()@!?/&%$#]*$", ErrorMessage = "Message can only contain alphanumeric characters, spaces, and the following special characters: - + = () @ ! ? / & % $ #")]
         public string Message { get; set; }
     }
 }

@@ -14,6 +14,7 @@ using Infrastructure.IGenericRepository;
 using Model.Enums;
 using Infrastructure.IRepository;
 using Infrastructure.Migrations;
+using Ganss.Xss;
 
 namespace Business.Email.Validator
 {
@@ -67,9 +68,9 @@ namespace Business.Email.Validator
             {
                 var receivedemail = new ReceivedEmail()
                 {
-                    Name = model.Name,
-                    Email = model.Email,
-                    Message = model.Message,
+                    Name = SanitizeInput(model.Name),
+                    Email = SanitizeInput(model.Email),
+                    Message = SanitizeInput(model.Message),
                     EmailStatus = ReceviedEmailEnum.Unread,
                     EmailDate = DateTime.Now.ToString("dd-MM-yyyy (dddd) hh:mm tt")
                 };
@@ -102,6 +103,11 @@ namespace Business.Email.Validator
             {
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
+        }
+        private string SanitizeInput(string input)
+        {
+            var sanitizer = new HtmlSanitizer();
+            return sanitizer.Sanitize(input);
         }
     }
 }

@@ -118,6 +118,7 @@ namespace LocalBrand.Controllers
             try
             {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                userId = "72a76135-42f4-497d-ab08-1522f32432f6";
                 if (userId == null)
                 {
                     return BadRequest("Invalid token.");

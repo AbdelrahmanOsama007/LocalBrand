@@ -176,22 +176,16 @@ namespace Business.AdminAuth.Validator
 
         private async Task<string> GenerateJwtToken(AppUser user)
         {
-
-
             var roles = await _userManager.GetRolesAsync(user);
             var roleClaims = new List<Claim>();
-
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-            }
-            .Union(roleClaims);
-
+            }.Union(roleClaims);
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
             var signingCredintials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-
             var jwtToken = new JwtSecurityToken(
             issuer: _jwt.Issuer,
             audience: _jwt.Audience,
@@ -200,7 +194,6 @@ namespace Business.AdminAuth.Validator
             expires: DateTime.UtcNow.AddDays(_jwt.DurationInDays),
                 signingCredentials: signingCredintials
                 );
-
             return new JwtSecurityTokenHandler().WriteToken(jwtToken);
         }
         private string GenerateTemporaryPassword()

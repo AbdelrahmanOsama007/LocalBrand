@@ -168,7 +168,7 @@ namespace Business.Orders.Validator
                         var orderDto = new AdminOrderDto()
                         {
                             OrderId = order.Id,
-                            OrderDate = order.OrderDate,
+                            OrderDate = order.OrderDate.ToString("dd-MM-yyyy (dddd) hh:mm tt"),
                             OrderNumber = order.OrderNumber,
                             FirstName = order.UserAddress.FirstName,
                             LastName = order.UserAddress.LastName,
@@ -226,7 +226,6 @@ namespace Business.Orders.Validator
                 }
                 var order = (Order)orderresult.Data;
 
-                order.OrderDate = updatedOrder.OrderDate;
                 order.UserAddress.FirstName = updatedOrder.FirstName;
                 order.UserAddress.LastName = updatedOrder.LastName;
                 order.UserAddress.City = updatedOrder.City;
