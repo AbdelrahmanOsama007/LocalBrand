@@ -331,7 +331,7 @@ namespace Business.Orders.Validator
         {
             var SentEmail = _emailService.SendEmail(new EmailModel()
             {
-                FromName = "Eleve Store",
+                FromName = "Élevé",
                 ToName = $"{order.FirstName} {order.LastName}",
                 ToEmail = order.Email,
                 Subject = "Order Confirmation",
@@ -355,7 +355,7 @@ namespace Business.Orders.Validator
         public void SendOrderDeliveredEmail(OrderDto order) {
             var SentEmail = _emailService.SendEmail(new EmailModel()
             {
-                FromName = "Eleve Store",
+                FromName = "Élevé",
                 ToName = $"{order.FirstName} {order.LastName}",
                 ToEmail = order.Email,
                 Subject = "Order Delevired",
@@ -379,7 +379,7 @@ namespace Business.Orders.Validator
         {
             var SentEmail = _emailService.SendEmail(new EmailModel()
             {
-                FromName = "Eleve Store",
+                FromName = "Élevé",
                 ToName = $"{order.FirstName} {order.LastName}",
                 ToEmail = order.Email,
                 Subject = "Order Canceled",
