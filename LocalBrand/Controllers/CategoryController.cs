@@ -42,6 +42,7 @@ namespace LocalBrand.Controllers
         }
         [HttpPost("AddCategory")]
         [EnableRateLimiting("AddCategoryPolicy")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddCategory([FromBody] NewCategoryDto category)
         {
             try
@@ -72,6 +73,7 @@ namespace LocalBrand.Controllers
         }
         [HttpPost("UpdateCategory")]
         [EnableRateLimiting("UpdateCategoryPolicy")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdateCategory(int id,[FromBody] NewCategoryDto category)
         {
             try
@@ -98,6 +100,7 @@ namespace LocalBrand.Controllers
         }
         [HttpPost("DeleteCategory")]
         [EnableRateLimiting("DeleteCategoryPolicy")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             try

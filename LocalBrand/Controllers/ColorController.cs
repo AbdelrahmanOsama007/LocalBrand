@@ -1,5 +1,6 @@
 ﻿using Business.Cart.Interfaces;
 using Business.Colors.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -7,6 +8,7 @@ namespace LocalBrand.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class ColorController : Controller
     {
         private readonly ILogger<ColorController> _logger;

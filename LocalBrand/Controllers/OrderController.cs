@@ -10,6 +10,7 @@ namespace LocalBrand.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
@@ -21,6 +22,7 @@ namespace LocalBrand.Controllers
         }
         [HttpPost("AddNewOrder")]
         [EnableRateLimiting("AddNewOrderPolicy")]
+        [AllowAnonymous]
         public async Task<IActionResult> AddOrder(OrderDto order)
         {
             try

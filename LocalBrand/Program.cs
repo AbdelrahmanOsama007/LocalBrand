@@ -24,6 +24,7 @@ using Infrastructure.GenericRepository;
 using Infrastructure.IGenericRepository;
 using Infrastructure.IRepository;
 using Infrastructure.Repository;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;

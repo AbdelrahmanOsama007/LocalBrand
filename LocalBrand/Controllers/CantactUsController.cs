@@ -1,5 +1,6 @@
 ﻿using Business.Email.Dtos;
 using Business.Email.Validator;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Model.Enums;
@@ -54,6 +55,7 @@ namespace LocalBrand.Controllers
         }
         [HttpPost("GetAllEmails")]
         [EnableRateLimiting("GetAllEmailsPolicy")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAllEmails(EmailPagination emailmodel)
         {
             try
@@ -77,6 +79,7 @@ namespace LocalBrand.Controllers
         }
         [HttpPost("EditEmailStatus")]
         [EnableRateLimiting("EditEmailStatusPolicy")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> EditEmailStatus(ContactInfo contactobject)
         {
             try

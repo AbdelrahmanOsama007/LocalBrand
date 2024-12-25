@@ -1,5 +1,6 @@
 ﻿using Business.Colors.Interfaces;
 using Business.Sizes.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -7,6 +8,7 @@ namespace LocalBrand.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class SizeController : Controller
     {
         private readonly ILogger<SizeController> _logger;

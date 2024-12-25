@@ -113,6 +113,7 @@ namespace LocalBrand.Controllers
         }
         [HttpPost("change-password")]
         [EnableRateLimiting("change-passwordPolicy")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
         {
             try
