@@ -119,7 +119,6 @@ namespace LocalBrand.Controllers
             try
             {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                userId = "72a76135-42f4-497d-ab08-1522f32432f6";
                 if (userId == null)
                 {
                     return BadRequest("Invalid token.");
@@ -129,7 +128,12 @@ namespace LocalBrand.Controllers
                 if (result.Success)
                 {
                     _logger.LogInformation($"Password changed successfully for user with ID '{userId}'.");
-                    return Ok(new { message = "Password changed successfully." });
+                    return Ok(new { success = true, message = "Password changed successfully." });
+                }
+                else if (!result.Success && result.ErrorMessage == "Current password is incorrect.")
+                {
+                    _logger.LogWarning($"Failed to change password for user with ID '{userId}'. Error: {result.ErrorMessage}");
+                    return Ok(new { success = false });
                 }
                 else
                 {
@@ -142,6 +146,13 @@ namespace LocalBrand.Controllers
                 _logger.LogError(ex, "An unexpected error occurred during password change.");
                 return StatusCode(500, new { error = "An unexpected error occurred during password change." });
             }
+        }
+        [HttpPost("is-auth")]
+        [EnableRateLimiting("is-authPolicy")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult IsAuth()
+        {
+            return Ok();
         }
     }
 }
