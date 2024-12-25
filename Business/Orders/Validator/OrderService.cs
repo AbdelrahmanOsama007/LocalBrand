@@ -341,13 +341,13 @@ namespace Business.Orders.Validator
                         </div>
                         <div style='font-size: 16px; line-height: 1.5;'>
                             <h2 style='font-size: 24px; color: #333; text-align:center'>Order Confirmation</h2>
-                            <p>Dear <strong>{order.FirstName} {order.LastName}</strong>,</p>
+                            <p>Dear <strong>{SanitizeInput(order.FirstName)} {SanitizeInput(order.LastName)}</strong>,</p>
                             <p>Thank you for shopping with <strong>Élevé</strong> Your order has been successfully placed.</p>
                             <p>We will deliver it for you as soon as possible.</p>
                             <p>If you have any questions or need assistance, feel free to contact our support team.</p>
                         </div>
                         <div style='text-align: center; font-size: 12px; color: #888; padding-top: 20px;'>
-                            <p>&copy; 2024 Eleve Store | All rights reserved</p>
+                            <p>&copy; 2025 Eleve Store | All rights reserved</p>
                         </div>
                     </div>"
             });
@@ -365,12 +365,12 @@ namespace Business.Orders.Validator
                         </div>
                         <div style='font-size: 16px; line-height: 1.5;'>
                             <h2 style='font-size: 24px; color: #333; text-align:center'>Order Delevired</h2>
-                            <p>Dear <strong>{order.FirstName} {order.LastName}</strong>,</p>
+                            <p>Dear <strong>{SanitizeInput(order.FirstName)} {SanitizeInput(order.LastName)}</strong>,</p>
                             <p>Thank you for shopping with <strong>Élevé</strong> Your order has been successfully delevired.</p>
                             <p>If you have any feedback , questions or need assistance, feel free to contact our support team.</p>
                         </div>
                         <div style='text-align: center; font-size: 12px; color: #888; padding-top: 20px;'>
-                            <p>&copy; 2024 Eleve Store | All rights reserved</p>
+                            <p>&copy; 2025 Eleve Store | All rights reserved</p>
                         </div>
                     </div>"
             });
@@ -389,12 +389,12 @@ namespace Business.Orders.Validator
                         </div>
                         <div style='font-size: 16px; line-height: 1.5;'>
                             <h2 style='font-size: 24px; color: #333; text-align:center'>Order Canceled</h2>
-                            <p>Dear <strong>{order.FirstName} {order.LastName}</strong>,</p>
+                            <p>Dear <strong>{SanitizeInput(order.FirstName)} {SanitizeInput(order.LastName)}</strong>,</p>
                             <p>Thank you for shopping with <strong>Élevé</strong> We are sorry to tell you that your order has been successfully canceled.</p>
                             <p>If you have any feedback , questions or need assistance, feel free to contact our support team.</p>
                         </div>
                         <div style='text-align: center; font-size: 12px; color: #888; padding-top: 20px;'>
-                            <p>&copy; 2024 Eleve Store | All rights reserved</p>
+                            <p>&copy; 2025 Eleve Store | All rights reserved</p>
                         </div>
                     </div>"
             });
