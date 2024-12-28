@@ -108,7 +108,7 @@ namespace Business.Orders.Validator
                 await transaction.CommitAsync();
                 if(order.PaymentMethod == PaymentMethodEnum.PayOnDelivery)
                 {
-                    SendOrderProcessedEmail(order);
+                    SendOrderProcessedEmail(order,neworder.OrderNumber);
                     return new OperationResult() { Success = true, Data = true, Message = "Ordered Successfully" };
                 }
                 var orderinfoobject = new OrderInfo { Id = neworder.Id, TotalPrice = neworder.TotalPrice, Hash = Kashier.create_hash(neworder.Id, neworder.TotalPrice) };
@@ -332,7 +332,7 @@ namespace Business.Orders.Validator
 
             return orderNumber;
         }
-        public void SendOrderProcessedEmail(OrderDto order)
+        public void SendOrderProcessedEmail(OrderDto order,string ordernumber)
         {
             var SentEmail = _emailService.SendEmail(new EmailModel()
             {
@@ -349,6 +349,7 @@ namespace Business.Orders.Validator
                             <p>Dear <strong>{SanitizeInput(order.FirstName)} {SanitizeInput(order.LastName)}</strong>,</p>
                             <p>Thank you for shopping with <strong>Élevé</strong> Your order has been successfully placed.</p>
                             <p>We will deliver it for you as soon as possible.</p>
+                            <p>Your order number is <strong>{ordernumber}</strong>.</p>
                             <p>If you have any questions or need assistance, feel free to contact our support team.</p>
                         </div>
                         <div style='text-align: center; font-size: 12px; color: #888; padding-top: 20px;'>

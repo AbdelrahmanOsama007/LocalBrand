@@ -17,7 +17,7 @@ namespace Business.Orders.Interfaces
         Task<OperationResult> GetAllOrdersAsync();
         Task<OperationResult> UpdateOrderAsync(AdminOrderDto updatedOrder);
         Task<OperationResult> GetOrderById(int orderid);
-        void SendOrderProcessedEmail(OrderDto order);
+        void SendOrderProcessedEmail(OrderDto order,string ordernumber);
         void SendOrderDeliveredEmail(OrderDto order);
         void SendOrderCanceledEmail(OrderDto order);
     }

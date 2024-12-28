@@ -44,7 +44,7 @@ namespace LocalBrand.Controllers
                         orderobject.IsTransactionSuccess = true;
                         await _orderrepository.SaveChangesAsync();
                         var orderdto = new OrderDto() { FirstName = orderobject.UserAddress.FirstName, LastName = orderobject.UserAddress.LastName, Email = orderobject.UserAddress.Email};
-                        _orderService.SendOrderProcessedEmail(orderdto);
+                        _orderService.SendOrderProcessedEmail(orderdto,orderobject.OrderNumber);
                        return Ok(new OperationResult { Success = true, Data = true, Message = "Ordered Successfully" }) ;
                     }
                     else
