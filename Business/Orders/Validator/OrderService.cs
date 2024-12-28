@@ -284,6 +284,11 @@ namespace Business.Orders.Validator
                                     result.Quantity = result.Quantity - (orderdetail.Quantity - oldorderdetail.Quantity);
                                     await _productrepository.SaveChangesAsync();
                                 }
+                                if(updatedOrder.OrderStatus == OrderStatusEnum.Cancelled)
+                                {
+                                    result.Quantity += orderdetail.Quantity;
+                                    await _productrepository.SaveChangesAsync();
+                                }
                             }
                         }
                     }

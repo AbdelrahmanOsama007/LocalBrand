@@ -80,6 +80,7 @@ namespace LocalBrand
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IEmailRepository, EmailRepository>();
+            builder.Services.AddScoped<IColorRepository, ColorRepository>();
             builder.Services.AddScoped<IWishlistService, WishlistService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IColorService, ColorService>();

@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 
 namespace Business.Colors.Dtos
 {
-    public class ColorDto
+    public class ColorAdminDto
     {
-        public int Id { get; set; }
         [Required]
         [MinLength(3)]
         [MaxLength(20)]
         [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "ColorName can only contain letters.")]
         public string ColorName { get; set; }
         [Required]
-        [RegularExpression(@"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", ErrorMessage = "ColorCode must be a valid hex code (e.g., #FFF or #FFFFFF).")]
         public string ColorCode { get; set; }
     }
 }
