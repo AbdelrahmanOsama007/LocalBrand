@@ -8,7 +8,78 @@ namespace Model.Models
 {
     public class PaymentDto
     {
-        public string merchantOrderId {  get; set; }
-        public string status { get; set; }
+        public string Event { get; set; }
+        public PaymentData Data { get; set; }
+    }
+    public class PaymentData
+    {
+        public string MerchantOrderId { get; set; }
+        public string KashierOrderId { get; set; }
+        public string OrderReference { get; set; }
+        public string TransactionId { get; set; }
+        public string Status { get; set; }
+        public string Method { get; set; }
+        public DateTime CreationDate { get; set; }
+        public int Amount { get; set; }
+        public string Currency { get; set; }
+        public CardDetails Card { get; set; }
+        public MetaData MetaData { get; set; }
+        public SourceOfFunds SourceOfFunds { get; set; }
+        public string TransactionResponseCode { get; set; }
+        public TransactionResponseMessage TransactionResponseMessage { get; set; }
+        public string Channel { get; set; }
+        public MerchantDetails MerchantDetails { get; set; }
+        public List<string> SignatureKeys { get; set; }
+        public object Platform { get; set; }
+    }
+
+    public class CardDetails
+    {
+        public CardInfo CardInfo { get; set; }
+        public Merchant Merchant { get; set; }
+        public int Amount { get; set; }
+        public string Currency { get; set; }
+    }
+
+    public class CardInfo
+    {
+        public string CardHolderName { get; set; }
+        public string CardBrand { get; set; }
+        public string MaskedCard { get; set; }
+    }
+
+    public class Merchant
+    {
+        public string MerchantRedirectURL { get; set; }
+    }
+
+    public class MetaData
+    {
+        public DateTime Time { get; set; }
+    }
+
+    public class SourceOfFunds
+    {
+        public CardInfo CardInfo { get; set; }
+        public SecureDetails SecureDetails { get; set; }
+    }
+
+    public class SecureDetails
+    {
+        public string ProcessACSRedirectURL { get; set; }
+    }
+
+    public class TransactionResponseMessage
+    {
+        public string En { get; set; }
+        public string Ar { get; set; }
+    }
+
+    public class MerchantDetails
+    {
+        public string MCC { get; set; }
+        public string BusinessIndustry { get; set; }
+        public string MerchantId { get; set; }
+        public string StoreName { get; set; }
     }
 }

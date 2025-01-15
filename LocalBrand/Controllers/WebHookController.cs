@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Model.Enums;
 using Model.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -65,34 +66,38 @@ namespace LocalBrand.Controllers
         }
         [HttpPost("CompletePayment")]
         [EnableRateLimiting("CompletePaymentPolicy")]
-        public async Task<IActionResult> CompletePayment([FromForm] object data)
+        public async Task<IActionResult> CompletePayment()
         {
             try
             {
                 string requestBody;
                 using (var reader = new System.IO.StreamReader(Request.Body))
                 {
-                    requestBody = reader.ReadToEnd();
+                    requestBody = await reader.ReadToEndAsync();
                 }
                 string receivedSignature = Request.Headers["x-kashier-signature"];
                 string secretKey = "224067ad-549d-41e0-a1b0-093ee0b996a0";
-                dynamic parsedBody = JObject.Parse(requestBody);
-
+                var paymentData = JsonConvert.DeserializeObject<PaymentDto>(requestBody);
                 SignatureValidator validator = new SignatureValidator();
-                bool isSignatureValid = validator.ValidateSignature(parsedBody, receivedSignature, secretKey);
+                bool isSignatureValid = validator.ValidateSignature(paymentData.Data, receivedSignature, secretKey);
                 if (isSignatureValid)
                 {
-                    var kashirobject = (PaymentDto)data;
-                    var result = await _orderrepository.GetByIdAsync(int.Parse(kashirobject.merchantOrderId));
-                    var orderobject = (Order)result.Data;
-                    if (kashirobject.status == "SUCCESS")
+                    var result = await _orderrepository.GetByIdAsync(int.Parse(paymentData.Data.MerchantOrderId));
+                    var orderObject = (Order)result.Data;
+
+                    if (paymentData.Data.Status == "SUCCESS")
                     {
                         if (result.Success)
                         {
-                            orderobject.IsTransactionSuccess = true;
+                            orderObject.IsTransactionSuccess = true;
                             await _orderrepository.SaveChangesAsync();
-                            var orderdto = new OrderDto() { FirstName = orderobject.UserAddress.FirstName, LastName = orderobject.UserAddress.LastName, Email = orderobject.UserAddress.Email };
-                            _orderService.SendOrderProcessedEmail(orderdto, orderobject.OrderNumber);
+                            var orderDto = new OrderDto
+                            {
+                                FirstName = orderObject.UserAddress.FirstName,
+                                LastName = orderObject.UserAddress.LastName,
+                                Email = orderObject.UserAddress.Email
+                            };
+                            _orderService.SendOrderProcessedEmail(orderDto, orderObject.OrderNumber);
                             return Ok(new OperationResult { Success = true, Data = true, Message = "Ordered Successfully" });
                         }
                         else
@@ -105,7 +110,7 @@ namespace LocalBrand.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, "Error occurred in CompletePayment.");
                 return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
             }
         }
