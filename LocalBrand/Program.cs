@@ -294,6 +294,7 @@ namespace LocalBrand
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseCors("AllowAllDomains");
             app.UseAuthentication();
             app.UseAuthorization();

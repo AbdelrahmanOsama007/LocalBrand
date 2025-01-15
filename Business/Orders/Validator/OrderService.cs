@@ -342,7 +342,7 @@ namespace Business.Orders.Validator
                 Subject = "Order Confirmation",
                 Body = $@"<div style='width: 100%; max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
                         <div style='text-align: center; padding: 10px 0;'>
-                            <img src='https://orca-app-sw4g7.ondigitalocean.app/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
+                            <img src='/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
                         </div>
                         <div style='font-size: 16px; line-height: 1.5;'>
                             <h2 style='font-size: 24px; color: #333; text-align:center'>Order Confirmation</h2>
