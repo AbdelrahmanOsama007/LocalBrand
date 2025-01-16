@@ -20,22 +20,37 @@ namespace LocalBrand.Controllers
 {
     public class SignatureValidator
     {
-        public bool ValidateSignature(dynamic requestBody, string receivedSignature, string secretKey)
+        public bool ValidateSignature(PaymentDto requestBody, string receivedSignature, string secretKey)
         {
-            string path = "";
-            foreach (string key in requestBody.data.signatureKeys)
+            if (requestBody?.Data == null || requestBody.Data.SignatureKeys == null)
             {
-                path += "&" + key + "=" + requestBody.data[key];
+                throw new ArgumentNullException(nameof(requestBody), "Invalid payment data or signature keys.");
             }
+
+            string path = "";
+            foreach (string key in requestBody.Data.SignatureKeys)
+            {
+                var property = requestBody.Data.GetType().GetProperty(key);
+                if (property != null)
+                {
+                    var value = property.GetValue(requestBody.Data)?.ToString();
+                    if (value != null)
+                    {
+                        path += "&" + key + "=" + value;
+                    }
+                }
+            }
+
             string message = path.Length > 0 ? path.Substring(1) : string.Empty;
-            System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+            var encoding = new System.Text.ASCIIEncoding();
             byte[] keyByte = encoding.GetBytes(secretKey);
             byte[] messageBytes = encoding.GetBytes(message);
-            using (HMACSHA256 hmacmd256 = new HMACSHA256(keyByte))
+
+            using (var hmacmd256 = new HMACSHA256(keyByte))
             {
                 byte[] hashMessage = hmacmd256.ComputeHash(messageBytes);
                 string computedSignature = ByteToString(hashMessage).ToLower();
-                return receivedSignature.Equals(computedSignature);
+                return receivedSignature.Equals(computedSignature, StringComparison.OrdinalIgnoreCase);
             }
         }
         private string ByteToString(byte[] buffer)
@@ -79,13 +94,14 @@ namespace LocalBrand.Controllers
                 string secretKey = "224067ad-549d-41e0-a1b0-093ee0b996a0";
                 var paymentData = JsonConvert.DeserializeObject<PaymentDto>(requestBody);
                 SignatureValidator validator = new SignatureValidator();
-                bool isSignatureValid = validator.ValidateSignature(paymentData.Data, receivedSignature, secretKey);
+                bool isSignatureValid = validator.ValidateSignature(paymentData, receivedSignature, secretKey);
                 if (isSignatureValid)
                 {
-                    var result = await _orderrepository.GetByIdAsync(int.Parse(paymentData.Data.MerchantOrderId));
+                    var kashirobject = (PaymentData)paymentData.Data;
+                    var result = await _orderrepository.GetByIdAsync(int.Parse(kashirobject.MerchantOrderId));
                     var orderObject = (Order)result.Data;
 
-                    if (paymentData.Data.Status == "SUCCESS")
+                    if (kashirobject.Status == "SUCCESS")
                     {
                         if (result.Success)
                         {

@@ -30,7 +30,7 @@ namespace Model.Models
         public string Channel { get; set; }
         public MerchantDetails MerchantDetails { get; set; }
         public List<string> SignatureKeys { get; set; }
-        public object Platform { get; set; }
+        public object Platform { get; set; } // Use a specific type if Platform has a defined structure
     }
 
     public class CardDetails
@@ -46,6 +46,11 @@ namespace Model.Models
         public string CardHolderName { get; set; }
         public string CardBrand { get; set; }
         public string MaskedCard { get; set; }
+        public string CardHash { get; set; } // Optional if applicable
+        public string ExpiryYear { get; set; } // Optional if applicable
+        public string ExpiryMonth { get; set; } // Optional if applicable
+        public string CcvToken { get; set; } // Optional if applicable
+        public string CardDataToken { get; set; } // Optional if applicable
     }
 
     public class Merchant
@@ -61,10 +66,10 @@ namespace Model.Models
     public class SourceOfFunds
     {
         public CardInfo CardInfo { get; set; }
-        public SecureDetails SecureDetails { get; set; }
+        public Secure3D Secure3D { get; set; }
     }
 
-    public class SecureDetails
+    public class Secure3D
     {
         public string ProcessACSRedirectURL { get; set; }
     }
