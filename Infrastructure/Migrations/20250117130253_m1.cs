@@ -32,8 +32,6 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -74,11 +72,29 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ColorName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ColorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ColorCode = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Colors", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReceivedEmails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmailStatus = table.Column<int>(type: "int", nullable: false),
+                    EmailDate = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReceivedEmails", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,6 +104,7 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SizeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SizeKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Indicator = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -252,6 +269,8 @@ namespace Infrastructure.Migrations
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     SubTotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "int", nullable: false),
+                    IsTransactionSuccess = table.Column<bool>(type: "bit", nullable: false),
                     OrderStatus = table.Column<int>(type: "int", nullable: false),
                     AddressId = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -274,7 +293,8 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Summary = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FullDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Discount = table.Column<int>(type: "int", nullable: false),
                     BestSeller = table.Column<bool>(type: "bit", nullable: false),
@@ -298,6 +318,8 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    PriceBeforeDiscount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PriceAfterDiscount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     SubTotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     SizeId = table.Column<int>(type: "int", nullable: false),
@@ -417,34 +439,48 @@ namespace Infrastructure.Migrations
                 values: new object[,]
                 {
                     { 1, false, "Men" },
-                    { 2, false, "Women" }
+                    { 2, false, "Women" },
+                    { 3, false, "Unisex" },
+                    { 4, false, "Accessories" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Colors",
-                columns: new[] { "Id", "ColorName" },
+                columns: new[] { "Id", "ColorCode", "ColorName" },
                 values: new object[,]
                 {
-                    { 1, "black" },
-                    { 2, "white" },
-                    { 3, "red" },
-                    { 4, "blue" }
+                    { 1, "#000000", "Black" },
+                    { 2, "#ffffff", "White" },
+                    { 3, "#FF0000", "Red" },
+                    { 4, "#4169e1", "Blue" },
+                    { 5, "#7ea122", "Avocado" },
+                    { 6, "#ede8d0", "Beige" },
+                    { 7, "#964B00", "Brown" },
+                    { 8, "#152238", "MidNight" },
+                    { 9, "#808080", "Grey" },
+                    { 10, "#003200", "DarkGreen" },
+                    { 11, "#d1e5f4", "BabyBlue" },
+                    { 12, "#ff69b4", "Pink" },
+                    { 13, "#fffff2", "OffWhite" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Sizes",
-                columns: new[] { "Id", "Indicator", "SizeName" },
+                columns: new[] { "Id", "Indicator", "SizeKey", "SizeName" },
                 values: new object[,]
                 {
-                    { 1, 0, "Small" },
-                    { 2, 0, "Medium" },
-                    { 3, 0, "Large" },
-                    { 4, 0, "XLarge" },
-                    { 5, 0, "Size32" },
-                    { 6, 0, "Size34" },
-                    { 7, 0, "Size36" },
-                    { 8, 0, "Size38" },
-                    { 9, 0, "Size40" }
+                    { 1, 0, "S", "Small" },
+                    { 2, 0, "M", "Medium" },
+                    { 3, 0, "L", "Large" },
+                    { 4, 0, "XL", "XLarge" },
+                    { 5, 0, "XXL", "XXLarge" },
+                    { 6, 0, "32", "Size32" },
+                    { 7, 0, "34", "Size34" },
+                    { 8, 0, "36", "Size36" },
+                    { 9, 0, "38", "Size38" },
+                    { 10, 0, "40", "Size40" },
+                    { 11, 0, "100 ML", "S100ML" },
+                    { 12, 0, "50 ML", "S50ML" }
                 });
 
             migrationBuilder.InsertData(
@@ -452,9 +488,14 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "CategoryId", "IsDeleted", "Name" },
                 values: new object[,]
                 {
-                    { 1, 1, false, "T-Shirt" },
-                    { 2, 1, false, "Hoddie" },
-                    { 3, 1, false, "Short" }
+                    { 1, 1, false, "MenT-Shirt" },
+                    { 2, 1, false, "MenHoddie" },
+                    { 3, 1, false, "MenShort" },
+                    { 4, 2, false, "WomenT-Shirt" },
+                    { 5, 2, false, "WomenHoddie" },
+                    { 6, 2, false, "Top" },
+                    { 7, 3, false, "UnisexHoddie" },
+                    { 8, 4, false, "Perfume" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -587,6 +628,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProductColorImages");
+
+            migrationBuilder.DropTable(
+                name: "ReceivedEmails");
 
             migrationBuilder.DropTable(
                 name: "Stocks");

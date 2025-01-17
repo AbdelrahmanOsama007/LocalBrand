@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(MyAppContext))]
-    [Migration("20241003210643_m1")]
+    [Migration("20250117130253_m1")]
     partial class m1
     {
         /// <inheritdoc />
@@ -173,19 +173,12 @@ namespace Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -264,6 +257,18 @@ namespace Infrastructure.Migrations
                             Id = 2,
                             IsDeleted = false,
                             Name = "Women"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsDeleted = false,
+                            Name = "Unisex"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IsDeleted = false,
+                            Name = "Accessories"
                         });
                 });
 
@@ -274,6 +279,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ColorCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ColorName")
                         .IsRequired()
@@ -287,22 +296,80 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            ColorName = "black"
+                            ColorCode = "#000000",
+                            ColorName = "Black"
                         },
                         new
                         {
                             Id = 2,
-                            ColorName = "white"
+                            ColorCode = "#ffffff",
+                            ColorName = "White"
                         },
                         new
                         {
                             Id = 3,
-                            ColorName = "red"
+                            ColorCode = "#FF0000",
+                            ColorName = "Red"
                         },
                         new
                         {
                             Id = 4,
-                            ColorName = "blue"
+                            ColorCode = "#4169e1",
+                            ColorName = "Blue"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ColorCode = "#7ea122",
+                            ColorName = "Avocado"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ColorCode = "#ede8d0",
+                            ColorName = "Beige"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ColorCode = "#964B00",
+                            ColorName = "Brown"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ColorCode = "#152238",
+                            ColorName = "MidNight"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ColorCode = "#808080",
+                            ColorName = "Grey"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ColorCode = "#003200",
+                            ColorName = "DarkGreen"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ColorCode = "#d1e5f4",
+                            ColorName = "BabyBlue"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ColorCode = "#ff69b4",
+                            ColorName = "Pink"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ColorCode = "#fffff2",
+                            ColorName = "OffWhite"
                         });
                 });
 
@@ -320,6 +387,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsTransactionSuccess")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
@@ -328,6 +398,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("OrderStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
 
                     b.Property<decimal>("SubTotalPrice")
@@ -364,6 +437,12 @@ namespace Infrastructure.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("PriceAfterDiscount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PriceBeforeDiscount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
@@ -399,12 +478,12 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("BestSeller")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Discount")
                         .HasColumnType("int");
+
+                    b.Property<string>("FullDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -418,6 +497,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("SubCategoryId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -476,6 +559,38 @@ namespace Infrastructure.Migrations
                     b.ToTable("ProductImages");
                 });
 
+            modelBuilder.Entity("Model.Models.ReceivedEmail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmailDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmailStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReceivedEmails");
+                });
+
             modelBuilder.Entity("Model.Models.Size", b =>
                 {
                     b.Property<int>("Id")
@@ -486,6 +601,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("Indicator")
                         .HasColumnType("int");
+
+                    b.Property<string>("SizeKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SizeName")
                         .IsRequired()
@@ -500,55 +619,85 @@ namespace Infrastructure.Migrations
                         {
                             Id = 1,
                             Indicator = 0,
+                            SizeKey = "S",
                             SizeName = "Small"
                         },
                         new
                         {
                             Id = 2,
                             Indicator = 0,
+                            SizeKey = "M",
                             SizeName = "Medium"
                         },
                         new
                         {
                             Id = 3,
                             Indicator = 0,
+                            SizeKey = "L",
                             SizeName = "Large"
                         },
                         new
                         {
                             Id = 4,
                             Indicator = 0,
+                            SizeKey = "XL",
                             SizeName = "XLarge"
                         },
                         new
                         {
                             Id = 5,
                             Indicator = 0,
-                            SizeName = "Size32"
+                            SizeKey = "XXL",
+                            SizeName = "XXLarge"
                         },
                         new
                         {
                             Id = 6,
                             Indicator = 0,
-                            SizeName = "Size34"
+                            SizeKey = "32",
+                            SizeName = "Size32"
                         },
                         new
                         {
                             Id = 7,
                             Indicator = 0,
-                            SizeName = "Size36"
+                            SizeKey = "34",
+                            SizeName = "Size34"
                         },
                         new
                         {
                             Id = 8,
                             Indicator = 0,
-                            SizeName = "Size38"
+                            SizeKey = "36",
+                            SizeName = "Size36"
                         },
                         new
                         {
                             Id = 9,
                             Indicator = 0,
+                            SizeKey = "38",
+                            SizeName = "Size38"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Indicator = 0,
+                            SizeKey = "40",
                             SizeName = "Size40"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Indicator = 0,
+                            SizeKey = "100 ML",
+                            SizeName = "S100ML"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Indicator = 0,
+                            SizeKey = "50 ML",
+                            SizeName = "S50ML"
                         });
                 });
 
@@ -613,21 +762,56 @@ namespace Infrastructure.Migrations
                             Id = 1,
                             CategoryId = 1,
                             IsDeleted = false,
-                            Name = "T-Shirt"
+                            Name = "MenT-Shirt"
                         },
                         new
                         {
                             Id = 2,
                             CategoryId = 1,
                             IsDeleted = false,
-                            Name = "Hoddie"
+                            Name = "MenHoddie"
                         },
                         new
                         {
                             Id = 3,
                             CategoryId = 1,
                             IsDeleted = false,
-                            Name = "Short"
+                            Name = "MenShort"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 2,
+                            IsDeleted = false,
+                            Name = "WomenT-Shirt"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 2,
+                            IsDeleted = false,
+                            Name = "WomenHoddie"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 2,
+                            IsDeleted = false,
+                            Name = "Top"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryId = 3,
+                            IsDeleted = false,
+                            Name = "UnisexHoddie"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryId = 4,
+                            IsDeleted = false,
+                            Name = "Perfume"
                         });
                 });
 

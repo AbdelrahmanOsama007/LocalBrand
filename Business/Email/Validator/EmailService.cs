@@ -13,7 +13,6 @@ using Business.Email.Dtos;
 using Infrastructure.IGenericRepository;
 using Model.Enums;
 using Infrastructure.IRepository;
-using Infrastructure.Migrations;
 using Ganss.Xss;
 
 namespace Business.Email.Validator
