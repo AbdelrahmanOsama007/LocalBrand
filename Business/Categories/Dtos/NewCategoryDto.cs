@@ -13,7 +13,6 @@ namespace Business.Categories.Dtos
         [Required]
         [MinLength(3)]
         [MaxLength(10)]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "SubCategoryName can only contain letters.")]
         public string CategoryName { get; set; }
         [Required]
         public List<NewSubCategoryDto> SubCategories { get; set; }

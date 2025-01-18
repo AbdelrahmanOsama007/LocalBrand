@@ -101,23 +101,23 @@ namespace LocalBrand.Controllers
         [HttpPost("DeleteCategory")]
         [EnableRateLimiting("DeleteCategoryPolicy")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> DeleteCategory(int id)
-        {
-            try
+            public async Task<IActionResult> DeleteCategory(int id)
             {
-                var result = await _categoryService.DeleteCategoryAsync(id);
-                if (!string.IsNullOrEmpty(result.DevelopMessage))
+                try
                 {
-                    _logger.LogError(result.DevelopMessage);
+                    var result = await _categoryService.DeleteCategoryAsync(id);
+                    if (!string.IsNullOrEmpty(result.DevelopMessage))
+                    {
+                        _logger.LogError(result.DevelopMessage);
+                    }
+                    return Ok(result);
                 }
-                return Ok(result);
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, new { Message = "Something Went Wrong. Please try again later." });
-            }
-        }
         [HttpPost("GetSubCategories")]
         [EnableRateLimiting("GetSubCategoriesPolicy")]
         public async Task<IActionResult> GetSubCats([FromBody]int id)
