@@ -198,10 +198,10 @@ namespace LocalBrand
                         partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
                         factory: _ => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = 30,
+                            PermitLimit = 300,
                             Window = TimeSpan.FromMinutes(1),
                             QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                            QueueLimit = 10
+                            QueueLimit = 30
                         }));
 
                 options.OnRejected = async (context, token) =>

@@ -330,7 +330,6 @@ namespace Business.Products.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-
         public async Task<OperationResult> GetSaleProducts()
         {
             try
@@ -372,7 +371,6 @@ namespace Business.Products.Validator
                 return new OperationResult() { Success = false, Message = "Something Went Wrong. Please Try Again Later", DevelopMessage = ex.Message };
             }
         }
-
         public async Task<OperationResult> UpdateProductAsync(int id, AdminProductDto updatedProduct)
         {
             using var transaction = await _productrepository.BeginTransactionAsync();

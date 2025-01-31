@@ -65,7 +65,7 @@ namespace Business.Orders.Validator
                 };
                 decimal subtotal = 0;
                 decimal total = 0;
-                
+                var OrderRecList = new List<ReceiptsDto>();
                 foreach (var item in order.Products)
                 {
 
@@ -79,6 +79,16 @@ namespace Business.Orders.Validator
                     product = (Product)getproduct.Data;
                     subtotal += product.Price * item.Quantity;
                     total += (product.Price - (product.Price * ((decimal)product.Discount / 100))) * item.Quantity;
+
+                    var receiptProduct = new ReceiptsDto()
+                    {
+                        ProductName = product.Name,
+                        ProductColor = _context.Colors.FirstOrDefault(c => c.Id == item.ColorId).ColorName,
+                        ProductSize = _context.Sizes.FirstOrDefault(s => s.Id == item.SizeId).SizeKey,
+                        ProductPrice = product.Discount > 0 ? (product.Price - (product.Price * ((decimal)product.Discount / 100))) : product.Price,
+                        ProductQuantity = item.Quantity,
+                    };
+                    OrderRecList.Add(receiptProduct);
 
                     var orderitem = new OrderDetails()
                     {
@@ -108,7 +118,7 @@ namespace Business.Orders.Validator
                 await transaction.CommitAsync();
                 if(order.PaymentMethod == PaymentMethodEnum.PayOnDelivery)
                 {
-                    SendOrderProcessedEmail(order,neworder.OrderNumber);
+                    SendOrderProcessedEmail(order,neworder.OrderNumber,OrderRecList, total);
                     return new OperationResult() { Success = true, Data = true, Message = "Ordered Successfully" };
                 }
                 var orderinfoobject = new OrderInfo { Id = neworder.Id, TotalPrice = neworder.TotalPrice, Hash = Kashier.create_hash(neworder.Id, neworder.TotalPrice) };
@@ -332,7 +342,7 @@ namespace Business.Orders.Validator
 
             return orderNumber;
         }
-        public void SendOrderProcessedEmail(OrderDto order,string ordernumber)
+        public void SendOrderProcessedEmail(OrderDto order,string ordernumber, List<ReceiptsDto> OrderRecList, decimal total)
         {
             var SentEmail = _emailService.SendEmail(new EmailModel()
             {
@@ -340,9 +350,19 @@ namespace Business.Orders.Validator
                 ToName = $"{order.FirstName} {order.LastName}",
                 ToEmail = order.Email,
                 Subject = "Order Confirmation",
-                Body = $@"<div style='width: 100%; max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                Body = $@"
+                        <html>
+<head>
+    <style>
+        .receipt-items {{ font-family: Arial, sans-serif; }}
+        table {{ width: 100%; border-collapse: collapse; }}
+        th, td {{ padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }}
+    </style>
+</head>
+<body>
+                        <div style='width: 100%; max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
                         <div style='text-align: center; padding: 10px 0;'>
-                            <img src='/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
+                            <img src='https://eleve.runasp.net/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
                         </div>
                         <div style='font-size: 16px; line-height: 1.5;'>
                             <h2 style='font-size: 24px; color: #333; text-align:center'>Order Confirmation</h2>
@@ -350,12 +370,34 @@ namespace Business.Orders.Validator
                             <p>Thank you for shopping with <strong>Élevé</strong> Your order has been successfully placed.</p>
                             <p>We will deliver it for you as soon as possible.</p>
                             <p>Your order number is <strong>{ordernumber}</strong>.</p>
+                             <div class='receipt-items'>
+                            <table class='table table-borderless'>
+                                <thead>
+                                    <tr><th>Item</th><th>Price</th><th>Size</th><th>Color</th><th>Quantity</th><th>Total</th></tr>
+                                </thead>
+                                <tbody>
+                                    {string.Join("", OrderRecList.Select(oi => $@"
+                                    <tr>
+                                        <td>{oi.ProductName}</td>
+                                        <td>{oi.ProductPrice}</td>
+                                        <td>{oi.ProductSize}</td>
+                                        <td>{oi.ProductColor}</td>
+                                        <td>{oi.ProductQuantity}</td>
+                                        <td>{oi.ProductPrice * oi.ProductQuantity}</td>
+                                    </tr>"))}
+                                </tbody>
+                            </table>
+                            <hr />
+                            <p><strong>Total Amount: {total} EGP </strong></p>
+                            </div>
                             <p>If you have any questions or need assistance, feel free to contact our support team.</p>
                         </div>
                         <div style='text-align: center; font-size: 12px; color: #888; padding-top: 20px;'>
                             <p>&copy; 2025 Eleve Store | All rights reserved</p>
                         </div>
-                    </div>"
+                    </div>
+                    </body>
+                    </html>"
             });
         }
         public void SendOrderDeliveredEmail(OrderDto order) {
@@ -367,7 +409,7 @@ namespace Business.Orders.Validator
                 Subject = "Order Delevired",
                 Body = $@"<div style='width: 100%; max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
                         <div style='text-align: center; padding: 10px 0;'>
-                            <img src='https://orca-app-sw4g7.ondigitalocean.app/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
+                            <img src='https://eleve.runasp.net/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
                         </div>
                         <div style='font-size: 16px; line-height: 1.5;'>
                             <h2 style='font-size: 24px; color: #333; text-align:center'>Order Delevired</h2>
@@ -391,7 +433,7 @@ namespace Business.Orders.Validator
                 Subject = "Order Canceled",
                 Body = $@"<div style='width: 100%; max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
                         <div style='text-align: center; padding: 10px 0;'>
-                            <img src='https://orca-app-sw4g7.ondigitalocean.app/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
+                            <img src='https://eleve.runasp.net/images/logo.png' alt='Eleve Store Logo' style='max-width: 200px; height: auto;' />
                         </div>
                         <div style='font-size: 16px; line-height: 1.5;'>
                             <h2 style='font-size: 24px; color: #333; text-align:center'>Order Canceled</h2>
