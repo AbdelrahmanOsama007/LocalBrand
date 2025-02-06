@@ -44,7 +44,7 @@ namespace Business
 
                 if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    uploadedImageUrls.Add(uploadResult.Url.ToString()); // Collect the URL
+                    uploadedImageUrls.Add(uploadResult.SecureUrl.ToString());
                 }
                 else
                 {
