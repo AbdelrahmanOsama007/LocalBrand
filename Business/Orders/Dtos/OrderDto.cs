@@ -16,12 +16,13 @@ namespace Business.Orders.Dtos
         [Required]
         [MinLength(3)]
         [MaxLength(20)]
-        [RegularExpression(@"^[a-zA-Z\u0600-\u06FF]+$", ErrorMessage = "First name can only contain letters.")]
+        [RegularExpression(@"^[a-zA-Z\u0600-\u06FF\s]+$", ErrorMessage = "First name can only contain letters and spaces.")]
         public string FirstName { get; set; }
+
         [Required]
         [MinLength(3)]
         [MaxLength(20)]
-        [RegularExpression(@"^[a-zA-Z\u0600-\u06FF]+$", ErrorMessage = "Last name can only contain letters.")]
+        [RegularExpression(@"^[a-zA-Z\u0600-\u06FF\s]+$", ErrorMessage = "Last name can only contain letters and spaces.")]
         public string LastName { get; set; }
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Please enter a valid email address.")]
@@ -32,7 +33,7 @@ namespace Business.Orders.Dtos
         [Required]
         [MinLength(3)]
         [MaxLength(20)]
-        [RegularExpression(@"^[a-zA-Z\u0600-\u06FF]+$", ErrorMessage = "City name can only contain letters.")]
+        [RegularExpression(@"^[a-zA-Z\u0600-\u06FF\s]+$", ErrorMessage = "City name can only contain letters and spaces.")]
         public string City { get; set; }
         [Required]
         [MinLength(3)]

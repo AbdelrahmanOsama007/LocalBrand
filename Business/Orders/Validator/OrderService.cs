@@ -459,7 +459,7 @@ namespace Business.Orders.Validator
         {
             string mid = "MID-29963-501";
             string currency = "EGP";
-            string secret = "224067ad-549d-41e0-a1b0-093ee0b996a0";
+            string secret = "c20bb8b4-06f8-4769-ac13-cab3f302c7da";
             string ORDERID = $"{orderId}";
             string AMOUNT = $"{(int)amount}";
             string path = "/?payment=" + mid + "." + ORDERID + "." + AMOUNT + "." + currency;
